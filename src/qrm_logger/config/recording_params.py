@@ -54,8 +54,8 @@ max_db = -60  # Maximum dB level for spectrum plots
 # dynamic property, managed by config.json (maps to 'fft_size')
 
 #fft_size_default=16384   # Good balance of speed and resolution
-fft_size_default=32768    # Current setting - high resolution
-#fft_size_default=65536   # Very high resolution, slower
+#fft_size_default=32768    # Current setting - high resolution
+fft_size_default=65536   # Very high resolution, slower
 
 # FFT Smoothing/Averaging Configuration
 # avg_alpha controls exponential averaging of FFT data (0.0 to 1.0)
