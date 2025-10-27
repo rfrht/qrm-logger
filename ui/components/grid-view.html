@@ -1,0 +1,147 @@
+<!-- Grid View Component -->
+<div x-data="{ async getGrids() { return Alpine.store('grid').getData() } }" x-init="getGrids()" x-cloak>
+  <!-- Controls Row: Plot Type Toggle (Waterfall/Average) -->
+  <div class="columns is-mobile" style="margin-bottom: 10px">
+    <div class="column" style="padding-bottom: 5px">
+      <div class="buttons has-addons">
+        <button
+          class="button is-small"
+          :class="$store.grid.plotType === 'waterfall' ? 'is-primary' : 'is-dark'"
+          @click="$store.grid.setPlotType('waterfall')"
+          title="Show waterfall (spectrogram) grid images"
+        >
+          Waterfall
+        </button>
+        <button
+          class="button is-small"
+          :class="$store.grid.plotType === 'average' ? 'is-primary' : 'is-dark'"
+          @click="$store.grid.setPlotType('average')"
+          title="Show time-averaged spectrum grid images"
+        >
+          Average
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Outer loop over days -->
+  <template x-for="(day, dIndex) in ($store.grid.getVisibleGroupedData() || [])" :key="day.date">
+    <div>
+      <div style="margin-bottom: 30px">
+        <span style="display: inline-block;
+                     background: transparent; 
+                     color: darkorange; 
+                     border: 1px dashed darkorange;
+                     padding: 0.75em 1.25em;
+                     font-weight: 700;
+                     font-size: 1.5rem;
+                     font-family: 'Courier New', monospace;" 
+              x-text="$store.grid.formatDay(day.date)"></span>
+      </div>
+
+      <!-- Inner loop over windows/parts for the day -->
+      <template x-for="(g, index) in day.parts" :key="day.date + '-' + (g.label || index)">
+        <div x-show="(g.resized || g.full)" style="margin-bottom: 30px">
+          <!-- Header row: part-of-day badge (left) + scale controls (right) -->
+          <div class="is-size-6 has-text-weight-semibold" style="margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            <div x-show="g.label" x-cloak>
+              <span class="tag is-large" 
+                    style="background: transparent; 
+                           color: darkorange; 
+                           padding: 0.75em 1.25em;
+                           font-weight: 700;
+                           font-size: 1.15rem;
+                           font-family: 'Courier New', monospace;" 
+                    x-text="g.label === '00-12' ? 'AM' : (g.label === '12-24' ? 'PM' : g.label + ' h')"></span>
+            </div>
+            <div class="is-flex is-align-items-center" style="gap: 0.4rem;">
+              <button class="button is-small is-dark" title="Decrease image width" :disabled="$store.grid.imageScalePercent <= 10" @click="$store.grid.decImageScale()">−</button>
+              <button class="button is-small is-dark" title="Increase image width" :disabled="$store.grid.imageScalePercent >= 100" @click="$store.grid.incImageScale()">+</button>
+              <button class="button is-small is-dark" title="Reset to 100%" :disabled="$store.grid.imageScalePercent === 100" @click="$store.grid.resetImageScale()">100%</button>
+            </div>
+          </div>
+          <div>
+            <img :src="$store.grid.getCurrentImage(g, true, dIndex === 0 && index === 0)"
+                 @click="$store.grid.openZoom(g, dIndex === 0 && index === 0)"
+                 :style="'cursor: pointer; height: auto; max-width: 100%; display: block; margin: 0 auto; width: ' + $store.grid.imageScalePercent + '%;'">
+            </img>
+          </div>
+          <div class="has-text-grey is-size-7" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>
+              resized: <span x-text="g.resized_size ? (g.resized_size / (1024*1024)).toFixed(2) : '—'"></span> MB
+            </span>
+            &nbsp;|&nbsp;
+            <span>
+              full: <span x-text="g.full_size ? (g.full_size / (1024*1024)).toFixed(2) : '—'"></span> MB
+            </span>
+          </div>
+        </div>
+      </template>
+
+      <!-- Image View Component (Browse Images) -->
+      <div style="margin-top: 20px; margin-bottom: 30px;">
+        <!-- Browse Images Button (Initial State) -->
+        <div x-show="$store.image.selectedDay !== day.date" x-cloak>
+          <button 
+            class="button is-small is-warning is-outlined" 
+            @click="$store.image.toggleBrowse(day.date)"
+          >
+            Browse Plots
+          </button>
+        </div>
+
+        <!-- Capture Spec Buttons (After clicking Browse) -->
+        <div x-show="$store.image.selectedDay === day.date" x-cloak style="margin-top: 10px;">
+          <div style="margin-bottom: 10px;">
+            <span class="has-text-weight-semibold" style="color: darkorange;">Select to browse plots:</span>
+          </div>
+          
+          <!-- Horizontal list of capture spec buttons -->
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;">
+            <template x-for="spec in $store.image.captureSpecs" :key="spec.id">
+              <button 
+                class="button is-small is-warning is-outlined"
+                @click="$store.image.openImages(spec.id)"
+                x-text="spec.id"
+                style="min-width: 70px;"
+              ></button>
+            </template>
+          </div>
+          
+          <!-- Close Button -->
+          <div>
+            <button 
+              class="button is-small is-dark is-outlined" 
+              @click="$store.image.toggleBrowse(day.date)"
+            >
+              Close
+            </button>
+          </div>
+          
+          <!-- Show message if no specs available -->
+          <div x-show="$store.image.captureSpecs.length === 0" class="has-text-grey-light" style="margin-top: 10px;">
+            No capture specs found for this set
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- Show history button when there are more days -->
+      <template x-if="!$store.grid.showAll && dIndex === 0 && ($store.grid.getGroupedData().length > 1)">
+        <div style="margin-bottom: 2rem;">
+          <button class="button" @click="$store.grid.toggleShowAll()">Show All</button>
+        </div>
+      </template>
+    </div>
+  </template>
+  <!-- Summary (render only when available) at bottom -->
+  <template x-if="$store.grid.getSummary()">
+    <div class="has-text-grey is-size-7" style="margin: 0.75rem 0 20px 0;">
+      <span style="color: #b5b5b5;">grid summary:</span>
+      <span style="margin-left: 0.5rem;">days covered: <span x-text="$store.grid.getSummary().days"></span></span>
+      <span style="margin-left: 1rem;">total images: <span x-text="$store.grid.getSummary().total"></span></span>
+      <span style="margin-left: 1rem;">date range: <span x-text="$store.grid.getSummary().start"></span> → <span x-text="$store.grid.getSummary().end"></span></span>
+    </div>
+  </template>
+</div>

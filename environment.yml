@@ -1,0 +1,28 @@
+name: qrm-logger
+channels:
+  - conda-forge
+dependencies:
+  # Python version
+  - python>=3.10
+  
+  # GNU Radio ecosystem
+  - gnuradio-core>=3.10.0
+  # osmosdr dependency can be removed if you use SDRplay
+  - gnuradio-osmosdr>=0.2.0
+
+  # Scientific computing stack
+  - numpy>=1.21.0
+  - matplotlib-base>=3.5.0
+
+  # Image processing
+  - pillow>=9.0.0
+  
+  # Web framework and utilities
+  - bottle>=0.12.25
+  - waitress>=3.0.2
+  - apscheduler>=3.10
+
+
+# Usage:
+# mamba env create -f environment.yml
+# mamba activate qrm-logger

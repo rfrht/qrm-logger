@@ -1,0 +1,94 @@
+<!-- Log View Component -->
+<div x-cloak>
+    <style>
+        /* Scope alignment rules to this component's table only */
+        .log-table thead th:first-of-type,
+        .log-table tbody td:first-of-type {
+            text-align: left !important;
+        }
+        .log-table thead th,
+        .log-table tbody td {
+            vertical-align: top;
+        }
+        .log-text-cell {
+            max-width: 60vw;
+            white-space: pre-wrap !important;
+            word-break: break-word;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+    </style>
+
+    <div class="is-size-4 has-text-weight-bold mb-4">
+        <div class="columns is-mobile" style="margin-bottom: 5px">
+
+        </div>
+        <!-- Filters: id and type -->
+        <div class="columns is-mobile" style="margin-bottom: 10px">
+                        <div class="column" style="padding-bottom: 5px">
+                <span>Processing Logs</span>
+            </div>
+            <div class="column is-narrow" style="padding-bottom: 5px; display: flex; align-items: center; gap: 6px;">
+                <label style="font-size: 15px">Id:</label>
+                <div class="select is-small">
+                    <select x-model="$store.log.idFilter" x-effect="$store.log.setFilteredData()">
+                        <option value="">All</option>
+                        <template x-for="opt in $store.log.distinctIds" :key="'id-opt-' + opt">
+                            <option :value="opt" x-text="opt"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+            <div class="column is-narrow" style="padding-bottom: 5px; display: flex; align-items: center; gap: 6px;">
+                <label style="font-size: 15px">Type:</label>
+                <div class="select is-small">
+                    <select x-model="$store.log.typeFilter" x-effect="$store.log.setFilteredData()">
+                        <option value="">All</option>
+                        <template x-for="opt in $store.log.distinctTypes" :key="'type-opt-' + opt">
+                            <option :value="opt" x-text="opt"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="$store.log.dataLoading" class="notification is-warning">
+        Loading logs...
+    </div>
+
+    <div x-show="$store.log.dataError" class="notification is-danger">
+        <span x-text="$store.log.dataError"></span>
+    </div>
+
+    <div x-show="!$store.log.dataLoading && $store.log.dataFiltered && $store.log.dataFiltered.length > 0" class="table-container">
+        <table class="table is-fullwidth is-striped is-hoverable is-narrow log-table" style="font-size: 0.85rem;">
+            <thead>
+                <tr>
+                    <th style="padding: 0.25rem 0.5rem; white-space: nowrap;">counter</th>
+                    <th style="padding: 0.25rem 0.5rem; white-space: nowrap;">date</th>
+                    <th style="padding: 0.25rem 0.5rem; white-space: nowrap;">time</th>
+                    <th style="padding: 0.25rem 0.5rem; white-space: nowrap;">id</th>
+                    <th style="padding: 0.25rem 0.5rem; white-space: nowrap;">type</th>
+                    <th style="padding: 0.25rem 0.5rem; white-space: nowrap;">log_text</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="(row, index) in $store.log.dataFiltered" :key="'log-' + index">
+                    <tr>
+                        <td x-text="(index === 0 || row.counter !== $store.log.dataFiltered[index-1].counter || row.date !== $store.log.dataFiltered[index-1].date || row.time !== $store.log.dataFiltered[index-1].time) ? row.counter : ''" style="padding: 0.25rem 0.5rem; white-space: nowrap;"></td>
+                        <td x-text="(index === 0 || row.counter !== $store.log.dataFiltered[index-1].counter || row.date !== $store.log.dataFiltered[index-1].date || row.time !== $store.log.dataFiltered[index-1].time) ? row.date : ''" style="padding: 0.25rem 0.5rem; white-space: nowrap;"></td>
+                        <td x-text="(index === 0 || row.counter !== $store.log.dataFiltered[index-1].counter || row.date !== $store.log.dataFiltered[index-1].date || row.time !== $store.log.dataFiltered[index-1].time) ? row.time : ''" style="padding: 0.25rem 0.5rem; white-space: nowrap;"></td>
+                        <td x-text="(index === 0 || row.id !== $store.log.dataFiltered[index-1].id) ? row.id : ''" style="padding: 0.25rem 0.5rem; white-space: nowrap;"></td>
+                        <td x-text="(index === 0 || row.id !== $store.log.dataFiltered[index-1].id || row.type !== $store.log.dataFiltered[index-1].type) ? row.type : ''" style="padding: 0.25rem 0.5rem; white-space: nowrap;"></td>
+                        <td class="log-text-cell" x-text="row.log_text" style="padding: 0.25rem 0.5rem; white-space: pre-wrap;"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+    <div x-show="!$store.log.dataLoading && $store.log.dataFiltered && $store.log.dataFiltered.length === 0" class="notification is-warning">
+        No logs available.
+    </div>
+</div>
+

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+
+<head>
+    <title>qrm-logger</title>
+    <style>[x-cloak]{ display: none !important; }</style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <link rel="stylesheet" href="./assets/static/style.css">
+    
+    <!-- PhotoSwipe v5 for image gallery -->
+    <link rel="stylesheet" href="https://unpkg.com/photoswipe@5.4.4/dist/photoswipe.css">
+    
+    <!-- Load PhotoSwipe FIRST - must be available before Alpine.js -->
+    <script src="https://unpkg.com/photoswipe@5.4.4/dist/umd/photoswipe.umd.min.js"></script>
+    <script src="https://unpkg.com/photoswipe@5.4.4/dist/umd/photoswipe-lightbox.umd.min.js"></script>
+
+    <!-- Load stores first (except app-store) -->
+    <script defer src="./assets/stores/config-store.js"></script>
+    <script defer src="./assets/stores/grid-store.js"></script>
+    <script defer src="./assets/stores/rms-store.js"></script>
+    <script defer src="./assets/stores/log-store.js"></script>
+    <script defer src="./assets/stores/image-store.js"></script>
+
+    <!-- Then load the main component -->
+    <script defer src="./assets/static/main.js"></script>
+
+    <!-- Load app-store last since main.js calls its methods -->
+    <script defer src="./assets/stores/app-store.js"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+
+    <script defer src="https://unpkg.com/@panzoom/panzoom@4.6.0/dist/panzoom.min.js"></script>
+
+    <!-- iziToast for notifications -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
+
+    <!-- cRonstrue for human-readable cron descriptions -->
+    <script defer src="https://unpkg.com/cronstrue@3.2.0/dist/cronstrue.min.js"></script>
+
+
+
+</head>
+
+<body x-data="main" x-cloak x-show="ready" class="mr-5 ml-5">
+
+
+<div class="mt-5">
+    <!-- Status Error Warning -->
+    <div x-cloak x-show="$store.app.statusError" class="notification is-danger is-size-5 has-text-weight-bold status-error">
+        <button class="delete" @click="$store.app.statusError = ''"></button>
+        <div class="is-flex is-align-items-center">
+            <span class="is-size-3 mr-3">⚠️</span>
+            <div>
+                <div>SERVER CONNECTION ERROR</div>
+                <div class="is-size-6 has-text-weight-normal mt-2" x-text="$store.app.statusError"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Status Box Component -->
+    <div id="status-box-placeholder"></div>
+
+</div>
+
+
+<!-- Toggle Controls in Two Columns -->
+<div class="mb-4">
+    <div class="columns">
+        <!-- Left Column: View Mode Selection -->
+        <div class="column">
+            <div class="field">
+                <div class="control" style="display: flex; align-items: center; gap: 1rem; justify-content: space-between; flex-wrap: wrap;">
+                    <div class="buttons has-addons">
+                        <button 
+                            class="button" 
+                            :class="$store.app.viewMode === 'grid' ? 'is-primary' : 'is-dark'"
+                            @click="$store.app.setViewMode('grid')"
+                        >
+                            Grid
+                        </button>
+                        <button 
+                            class="button" 
+                            :class="$store.app.viewMode === 'rms' ? 'is-primary' : 'is-dark'"
+                            @click="$store.app.setViewMode('rms')"
+                        >
+                            RMS
+                        </button>
+                        <button 
+                            class="button" 
+                            :class="$store.app.viewMode === 'log' ? 'is-primary' : 'is-dark'"
+                            @click="$store.app.setViewMode('log')"
+                        >
+                            Log
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column: Container Selection -->
+        <div class="column is-narrow" style="display: flex; justify-content: flex-end;">
+            <div class="field">
+                <div class="control">
+                    <div class="buttons has-addons" x-show="$store.app.captureSetIdsLoaded" x-cloak>
+                        <template x-for="(id, index) in $store.app.captureSetIds">
+                        <button
+                            class="button"
+                            :class="$store.app.currentCaptureSetId === id ? 'is-primary' : 'is-dark'"
+                            @click="$store.app.setCaptureSet(id)"
+                        >
+                            <span x-text="id"></span>
+                        </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Grid View Component -->
+<div x-show="$store.app.viewMode === 'grid'" x-cloak>
+    <div id="grid-view-placeholder"></div>
+</div>
+
+<!-- RMS Data Table Component - Independent of grids -->
+<div x-show="$store.app.viewMode === 'rms'" x-cloak>
+    <div id="rms-data-table-placeholder"></div>
+</div>
+
+<!-- Log View Component -->
+<div x-show="$store.app.viewMode === 'log'" x-cloak>
+    <div id="log-view-placeholder"></div>
+</div>
+
+<div  id="modal-js-example"  class="modal " :class="{ 'is-active': $store.grid.showModal }" x-on:show-modal.window="$store.grid.showModal = !$store.grid.showModal; zoomInit($event.detail.zoomImageUrl, $event.detail.modalTitle)">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="modal-image-container">
+                <div class="modal-controls">
+                    <div class="modal-title">
+                        <span x-text="$store.grid.modalTitle"></span>
+                        <span x-cloak x-show="$store.grid.zoomLoading" style="color: red; font-weight: bold; margin-left: 10px;">* Loading *</span>
+                    </div>
+                    <div class="modal-zoom-controls">
+                        <span class="zoom-level-display" x-text="$store.grid.zoomLevel + 'x'"></span>
+                        <button class="button is-small is-warning" @click="$store.grid.zoomIn()" >+</button>
+                        <button class="button is-small is-warning" @click="$store.grid.zoomOut()" >-</button>
+                        <button class="button is-small is-warning" @click="$store.grid.center()" >center</button>
+                        <button class="button is-small is-warning" @click="$store.grid.resetZoom()" >reset</button>
+                    </div>
+                    <div></div> <!-- Empty div for grid layout -->
+                </div>
+            <div class="modal-image-wrapper">
+                <img :src="$store.grid.zoomImageUrl" id="panzoom-element" :style="$store.grid.zoomLoading ? 'visibility: hidden' : ''"></img>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close" @click="$store.grid.closeModal()"></button>
+</div>
+
+<!-- Configuration Modal Component -->
+<div id="config-modal-placeholder"></div>
+
+
+
+
+</body>
+
+</html>

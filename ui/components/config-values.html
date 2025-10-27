@@ -1,0 +1,85 @@
+<!-- Configuration Values - 3 Horizontal Lines (restored from original) -->
+<div x-cloak>
+    <!-- Line 1: Duration and Interval -->
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.9em; margin-bottom: 0.5rem;">
+        <div style="white-space: nowrap;">
+            <span style="color: #b5b5b5; font-weight: normal;">Record duration:</span>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;" x-text="($store.config.values.rec_time_default_sec || 2) + ' sec'"></span>
+        </div>
+        
+        <span style="color: #666;">|</span>
+        
+        <div style="white-space: nowrap;">
+            <span style="color: #b5b5b5; font-weight: normal;">Scheduler:</span>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;" x-text="$store.config.cronToText($store.config.values.scheduler_cron) || ($store.config.values.scheduler_cron || 'N/A')"></span>
+        </div>
+
+        <span style="color: #666;">|</span>
+
+        <div style="white-space: nowrap;">
+            <span style="font-weight: normal; margin-left: 0.25rem;" :style="$store.config.values.sdr_shutdown_after_recording ? 'color: #dbdbdb' : 'color: #ff3860'" x-text="$store.config.values.sdr_shutdown_after_recording ? 'Disconnect SDR' : 'Keep SDR Connection'"></span>
+            <span style="color: #b5b5b5; font-weight: normal;"> after recording</span>
+        </div>
+    </div>
+    
+    <!-- Line 2: RF Parameters -->
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.9em; margin-bottom: 0.5rem;">
+        <div style="white-space: nowrap;">
+            <span style="color: #b5b5b5; font-weight: normal;">RF Gain:</span>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;" x-text="($store.config.values.rf_gain) + ' dB'"></span>
+        </div>
+        
+        <!-- IF Gain (SDRPlay only) -->
+        <template x-if="$store.config.sdrOptions?.device === 'sdrplay'">
+            <div style="display: contents;">
+                <span style="color: #666;">|</span>
+                <div style="white-space: nowrap;">
+                    <span style="color: #b5b5b5; font-weight: normal;">IF Gain:</span>
+                    <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;" x-text="($store.config.values.if_gain) + ' dB'"></span>
+                </div>
+            </div>
+        </template>
+        
+        <span style="color: #666;">|</span>
+        
+        <div style="white-space: nowrap;">
+            <span style="color: #b5b5b5; font-weight: normal;">Bandwidth:</span>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;" x-text="($store.config.values.sdr_bandwidth || 'N/A') + ' kHz'"></span>
+        </div>
+        
+        <span style="color: #666;">|</span>
+        
+        <div style="white-space: nowrap;">
+            <span style="color: #b5b5b5; font-weight: normal;">FFT Size:</span>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;" x-text="($store.config.values.fft_size || 'N/A')"></span>
+        </div>
+        
+        <span style="color: #666;">|</span>
+        
+        <div style="white-space: nowrap;" x-show="$store.config.ui.spectrumDbEditMode !== 'noisefloor'" x-cloak>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;"
+                  x-text="'min: ' + (Number.isFinite(Number($store.config.values.min_db)) ? ($store.config.values.min_db + ' dB') : 'N/A')"></span>
+            <span style="color: #666;">|</span>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;"
+                  x-text="'max: ' + (Number.isFinite(Number($store.config.values.max_db)) ? ($store.config.values.max_db + ' dB') : 'N/A')"></span>
+        </div>
+        <div style="white-space: nowrap;" x-show="$store.config.ui.spectrumDbEditMode === 'noisefloor'" x-cloak>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;"
+                  x-text="'Noise Floor: ' + (Number.isFinite(Number($store.config.values.min_db)) ? ($store.config.values.min_db + ' dB') : 'N/A')"></span>
+            <span style="color: #666;">|</span>
+            <span style="color: #dbdbdb; font-weight: normal; margin-left: 0.25rem;"
+                  x-text="'Dynamic Range: ' + ((Number.isFinite(Number($store.config.values.max_db)) && Number.isFinite(Number($store.config.values.min_db))) ? (($store.config.values.max_db - $store.config.values.min_db) + ' dB') : 'N/A')"></span>
+        </div>
+    </div>
+    
+    <!-- Line 3: System Info -->
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.9em; margin-bottom: 0.5rem;">
+        <div style="white-space: nowrap;">
+            <span style="color: #b5b5b5; font-weight: normal;">Free disk space:</span>
+            <span :style="$store.app.diskSpaceStyle()" x-text="$store.app.formatMB($store.app.systemInfo.free_disk_mb)"></span>
+            <span x-show="$store.app.diskSpaceWarning()" :style="$store.app.diskSpaceStyle()" x-text="$store.app.diskSpaceWarning()"></span>
+        </div>
+    </div>
+    
+</div>
+

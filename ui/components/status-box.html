@@ -1,0 +1,120 @@
+<!-- Status Box Component -->
+<div x-cloak class="box mb-50 retro-glow" style="background: transparent; border: none;">
+    <!-- Title Row -->
+    <div class="mb-4 mt--10">
+        <div class="columns is-mobile">
+            <div class="column">
+                <span class="is-size-4 has-text-weight-bold" style="color: orange">qrm-logger</span>
+            </div>
+            <div class="column is-narrow has-text-right">
+                <button class="button is-small" 
+                        style="background: transparent; border: 1px dashed darkorange; color: darkorange; "
+                        @click="$store.config.openModal()">
+                    Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="columns">
+        <!-- Left Column -->
+        <div class="column">
+            <!-- Row 1: Status text -->
+            <div class="field mb-4">
+                <div class="control">
+                    <div class="is-flex is-align-items-center">
+                        <span class="status-label">Status:</span>
+                        <div x-cloak x-show="$store.app.status.recording" class="has-text-weight-bold" style="color: red;">
+                            <span x-text="$store.app.status.record_progress"></span> <span x-text="$store.app.status.record_time"></span>
+                        </div>
+                        <div x-cloak x-show="$store.app.status.error_text" class="has-text-weight-bold" style="color: red;">
+                            <span x-text="$store.app.status.error_text"></span>
+                            &nbsp;
+                        </div>
+                        <div x-cloak x-show="(!$store.app.status.recording) && ($store.app.status.scheduler && $store.app.status.scheduler.running)" class="has-text-darkorange has-text-weight-bold">
+                            <span>WAITING</span>
+                            <template x-if="$store.app.status.next_scheduled">
+                                <span class="is-size-7 ml-3 has-text-darkorange">
+                                    Next in <span x-text="$store.app.timeDelta($store.app.status.next_scheduled)"></span> (at <span x-text="$store.app.formatTimeOnly($store.app.status.next_scheduled)"></span> h<span x-show="!$store.app.isSameDay($store.app.status.next_scheduled)"> on <span x-text="$store.app.formatDateOnly($store.app.status.next_scheduled)"></span></span>)
+                                </span>
+                            </template>
+                        </div>
+                        <div x-cloak x-show="(!$store.app.status.recording) && !($store.app.status.scheduler && $store.app.status.scheduler.running)" class="has-text-success has-text-weight-bold">
+                            READY
+                        </div>
+                        <div style="margin-left: 30px; font-weight: bold;" >
+                            SDR:&nbsp;
+                            <template x-if="$store.app.status.sdr_active">
+                                <span style="color: red">ON</span>
+                            </template>
+                            <template x-if="!$store.app.status.sdr_active">
+                                <span class="has-text-grey">OFF</span>
+                            </template>
+
+                        </div>
+                    </div>
+                </div>
+                <p class="help has-text-danger" x-show="$store.app.statusPollIntervalSec === 0" x-cloak>Automatic status refresh is OFF.</p>
+
+            </div>
+
+
+            <!-- Row 3: Start Recording button and note input -->
+            <div class="field mb-3">
+                <div class="field is-grouped is-grouped-multiline">
+                    <div class="control">
+                        <button class="button" 
+                                style="background: transparent; border: 1px solid darkorange; color: darkorange; font-weight: 700;"
+                                @click="$store.app.startRecord()" 
+                                x-bind:disabled="$store.app.status.recording">
+                            Record once
+                        </button>
+                    </div>
+                    <div class="control" x-cloak x-show="$store.app.status.recording">
+                        <button class="button" 
+                                style="background: transparent; border: 1px dashed red; color: red; font-family: 'Courier New', monospace; font-weight: 700;" 
+                                @click="$store.app.stopRecord()">Stop</button>
+                    </div>
+                    <div class="control is-expanded">
+                        <input x-model="$store.app.note" class="input max-200" type="text" placeholder="Note (optional)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="column is-narrow">
+            <!-- Row 2: Scheduler button -->
+            <div class="field mb-3 is-flex is-justify-content-flex-end">
+                <div class="control">
+                    <button
+                        class="button is-small"
+                        :style="$store.app.schedulerEnabled ? 'background: transparent; border: 1px dashed red; color: red; font-weight: 700;' : 'background: transparent; border: 1px dashed darkorange; color: darkorange;  font-weight: 700;'"
+                        @click="$store.app.toggleScheduler()"
+                        x-text="$store.app.schedulerEnabled ? 'Stop Scheduler' : 'Start Scheduler'"
+                    ></button>
+                </div>
+            </div>
+
+            <!-- Row 3: SDR control button (explicit function with boolean parameter) -->
+            <div class="field mb-3 is-flex is-justify-content-flex-end">
+                <template x-if="$store.config.values && !$store.config.values.sdr_shutdown_after_recording">
+                    <div class="control" x-cloak>
+                        <button
+                            class="button is-small"
+                            :style="$store.app.status.sdr_active ? 'background: transparent; border: 1px dashed red; color: red;  font-weight: 700;' : 'background: transparent; border: 1px dashed darkorange; color: darkorange; font-weight: 700;'"
+                            :disabled="$store.app.sdrBusy"
+                            @click="$store.app.setSdrActive($store.app.status.sdr_active ? false : true)"
+                            x-text="$store.app.status.sdr_active ? 'Stop SDR' : 'Start SDR'"
+                        ></button>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Next execution information -->
+        </div>
+    </div>
+    
+    <!-- Configuration Values extracted into component -->
+    <div id="config-values-placeholder"></div>
+</div>

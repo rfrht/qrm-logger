@@ -1,0 +1,613 @@
+<!-- Configuration Modal Component -->
+<div x-cloak id="config-modal" class="modal" :class="{ 'is-active': $store.config.showModal }">
+    <div class="modal-background" @click="$store.config.closeModal()"></div>
+    <div class="modal-card" style="width: 95vw; max-width: 1100px; margin-top: 2rem; margin-bottom: auto;">
+        <section class="modal-card-body">
+            <div class="columns is-mobile" style="margin-bottom: 1.5rem;">
+                <div class="column">
+                    <h2 class="title is-4" style="color: white; margin-bottom: 0;">Configuration</h2>
+                </div>
+                <div class="column is-narrow">
+                    <button class="delete is-large" aria-label="close" @click="$store.config.closeModal()"></button>
+                </div>
+            </div>
+            <!-- Tab Navigation -->
+            <div class="tabs" style="margin-bottom: 10px">
+                <ul>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'general' }">
+                        <a @click="$store.config.setActiveTab('general')">
+                            General
+                        </a>
+                    </li>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'capture-sets' }">
+                        <a @click="$store.config.setActiveTab('capture-sets')">
+                            Capture Sets
+                        </a>
+                    </li>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'scheduler' }">
+                        <a @click="$store.config.setActiveTab('scheduler')">
+                            Scheduler
+                        </a>
+                    </li>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'sdr' }">
+                        <a @click="$store.config.setActiveTab('sdr')">
+                            SDR
+                        </a>
+                    </li>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'spectrum' }">
+                        <a @click="$store.config.setActiveTab('spectrum')">
+                            Spectrum
+                        </a>
+                    </li>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'ui-settings' }">
+                        <a @click="$store.config.setActiveTab('ui-settings')">
+                            UI
+                        </a>
+                    </li>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'roi' }">
+                        <a @click="$store.config.setActiveTab('roi')">
+                            ROIs
+                        </a>
+                    </li>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'about' }">
+                        <a @click="$store.config.setActiveTab('about')">
+                            About
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="tab-content">
+
+
+                <!-- General Tab -->
+                <div x-show="$store.config.activeTab === 'general'" x-cloak>
+
+                    <div class="field">
+                        <label class="label">Recording Time (seconds)</label>
+                        <div class="control">
+                            <input x-model="$store.config.form.rec_time_default_sec" class="input" type="number" min="1" max="60" step="1">
+                        </div>
+                        <p class="help">Default recording time in seconds. Recommended: 2 seconds for standard sweeps, 10 seconds for detecting pulsed or intermittent signals. Keep values moderate as recordings are processed in memory.</p>
+                    </div>
+
+                </div>
+
+                <!-- Capture Sets Tab -->
+                <div x-show="$store.config.activeTab === 'capture-sets'" x-cloak>
+                    <div class="field" style="margin-bottom: 30px">
+                        <div class="control">
+                            <label class="label">Capture Sets</label>
+                            <p class="help" style="margin-bottom: 1rem;">Enable capture sets and optionally override the default SDR bandwidth for each set. Changes take effect after the next recording starts.</p>
+
+                                <template x-for="id in $store.config.availableCaptureSets" :key="id">
+                                    <div class="is-flex is-align-items-center is-justify-content-space-between" style="gap: 0.75rem; margin-bottom: 0.4rem;">
+                                        <div class="is-flex is-align-items-center" style="flex: 1 1 auto; gap: 0.5rem;">
+                                            <label class="checkbox" style="margin-bottom: 0;">
+                                                <input type="checkbox" :value="id" x-model="$store.config.form.capture_sets_enabled">
+                                                <span x-text="id" style="margin-left: 0.25rem;"></span>
+                                            </label>
+                                            <button 
+                                                class="button is-small" 
+                                                @click="$store.config.openCaptureSetInfo(id)"
+                                                title="Show capture set details"
+                                                style="padding: 0.2rem 0.35rem; height: 1.2rem; width: 1.2rem; font-size: 0.65em; background-color: transparent; border: 1px solid #7a7a7a; color: #9a9a9a; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;"
+                                            >
+                                                ℹ
+                                            </button>
+                                        </div>
+                                        <div class="is-flex is-align-items-center" style="gap: 0.4rem; flex: 0 0 auto;">
+                                            <span class="is-size-7 has-text-grey">Bandwidth</span>
+                                            <div class="select is-small">
+                                                <select x-init="$store.config.form.capture_set_configurations[id] = $store.config.form.capture_set_configurations[id] || {}" x-model="$store.config.form.capture_set_configurations[id].bandwidth">
+                                                    <option value="">Default</option>
+                                                    <template x-for="option in ($store.config.sdrOptions && $store.config.sdrOptions.bandwidth ? $store.config.sdrOptions.bandwidth.options : [])" :key="option">
+                                                        <option :value="option" x-text="option + ' kHz'"></option>
+                                                    </template>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scheduler Tab -->
+                <div x-show="$store.config.activeTab === 'scheduler'" x-cloak>
+
+                    <div class="box" style="background-color: #1a1a1a; border: 1px solid #333; padding: 0.75rem; margin-bottom: 1rem;">
+                        <label class="checkbox">
+                            <input type="checkbox" x-model="$store.config.form.scheduler_autostart">
+                            Automatically start scheduler when application starts
+                        </label>
+                        <p class="help" style="margin-top: 0.5rem; margin-bottom: 0;">
+                            When enabled, the scheduler will automatically start when the application is launched. When disabled, the scheduler must be started manually.
+                        </p>
+                    </div>
+
+                    <div class="columns" style="gap: 1rem;">
+                        <!-- Left column: Cron Expression Input -->
+                        <div class="column">
+                            <div class="field">
+                                <label class="label">Cron Expression</label>
+                                <div class="control">
+                                    <input x-model="$store.config.form.scheduler_cron" class="input" type="text" placeholder="e.g. */15 * * * *">
+                                </div>
+                                <p class="help">Standard crontab format: minute hour day-of-month month day-of-week. Uses APScheduler (not system cron). Tip: Prefer day-of-week names (mon-sun) over numbers (0-6) to avoid ambiguity across systems.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Right column: Schedule Meaning -->
+                        <div class="column">
+                            <div class="field">
+                                <label class="label">Schedule Meaning</label>
+                                <div class="box" style="background-color: #1a1a1a; border: 1px solid #333; padding: 0.75rem; min-height: 3.25rem; display: flex; align-items: center;">
+                                    <span x-show="$store.config.form.scheduler_cron" x-text="$store.config.cronToText($store.config.form.scheduler_cron)" style="font-size: 1em; color: #dbdbdb;"></span>
+                                    <span x-show="!$store.config.form.scheduler_cron" style="font-size: 1em; color: #7a7a7a; font-style: italic;">Enter a cron expression</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <div class="has-text-weight-bold" style="margin-bottom: 0.5rem; color: darkorange;">Cron Examples</div>
+                        <table class="table is-narrow is-bordered" style="background-color: transparent; width: 100%;">
+                            <tbody>
+                                <tr>
+                                    <td style="white-space: nowrap;"><code style="color: darkorange;">*/15 * * * *</code></td>
+                                    <td style="font-size: 0.85em; color: #a5a5a5;">every 15 minutes</td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap;"><code style="color: darkorange;">0 * * * *</code></td>
+                                    <td style="font-size: 0.85em; color: #a5a5a5;">at minute 0 of every hour</td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap;"><code style="color: darkorange;">*/5 18-21 * * *</code></td>
+                                    <td style="font-size: 0.85em; color: #a5a5a5;">every 5 minutes from 18:00 to 21:59</td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap;"><code style="color: darkorange;">*/10 6-8,17-20 * * mon-fri</code></td>
+                                    <td style="font-size: 0.85em; color: #a5a5a5;">every 10 minutes during commute hours on weekdays</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="box" style="background-color: #1a1a1a; border: 1px solid #333; padding: 0.75rem; margin-top: 1rem;">
+                        <div class="help" style="margin-bottom: 0.25rem;">
+                            Warning: Very short intervals can create very large grids, slow processing, or cause out-of-memory.
+                            Consider adjusting <code>grid_time_window_hours</code> and <code>grid_max_rows</code> in the configuration.
+                        </div>
+                        <div class="help" style="margin-bottom: 0;">Note: Restart the scheduler (Stop, then Start) for changes to take effect.</div>
+                    </div>
+
+                </div>
+
+                <!-- RF/SDR Settings Tab -->
+                <div x-show="$store.config.activeTab === 'sdr'" x-cloak>
+                    <!-- Device Name Display -->
+                    <div style="margin-bottom: 1rem;">
+                        <span>SDR Device: </span>
+                        <strong x-text="($store.config.sdrOptions?.device || 'rtlsdr').toUpperCase()"></strong>
+                    </div>
+
+                    <!-- RF Gain -->
+                    <div class="field">
+                        <label class="label">RF Gain (dB)</label>
+                        <div class="control">
+                            <input x-model.number="$store.config.form.rf_gain" class="input" type="number" step="1">
+                        </div>
+                        <p class="help" style="font-size: 0.85em; margin-top: 0.25rem;" x-show="$store.config.sdrOptions && $store.config.sdrOptions.rf_gain">
+                            Range: <span x-text="$store.config.sdrOptions?.rf_gain?.min"></span> to <span x-text="$store.config.sdrOptions?.rf_gain?.max"></span> dB &nbsp;|&nbsp; Default: <span x-text="$store.config.sdrOptions?.rf_gain?.default"></span> dB
+                        </p>
+                        <p class="help has-text-danger" style="font-size: 0.85em; margin-top: 0.25rem;" 
+                           x-show="$store.config.sdrOptions && $store.config.sdrOptions.rf_gain && ($store.config.form.rf_gain < $store.config.sdrOptions.rf_gain.min || $store.config.form.rf_gain > $store.config.sdrOptions.rf_gain.max)">
+                            ⚠ Value outside valid range
+                        </p>
+                    </div>
+                    
+                    <!-- IF Gain (SDRPlay only) -->
+                    <div class="field" x-show="$store.config.sdrOptions && $store.config.sdrOptions.if_gain" x-cloak>
+                        <label class="label">IF Gain (dB)</label>
+                        <div class="control">
+                            <input x-model.number="$store.config.form.if_gain" class="input" type="number" step="1">
+                        </div>
+                        <p class="help" style="font-size: 0.85em; margin-top: 0.25rem;" x-show="$store.config.sdrOptions && $store.config.sdrOptions.if_gain">
+                            Range: <span x-text="$store.config.sdrOptions?.if_gain?.min"></span> to <span x-text="$store.config.sdrOptions?.if_gain?.max"></span> dB &nbsp;|&nbsp; Default: <span x-text="$store.config.sdrOptions?.if_gain?.default"></span> dB
+                        </p>
+                        <p class="help has-text-danger" style="font-size: 0.85em; margin-top: 0.25rem;" 
+                           x-show="$store.config.sdrOptions && $store.config.sdrOptions.if_gain && ($store.config.form.if_gain < $store.config.sdrOptions.if_gain.min || $store.config.form.if_gain > $store.config.sdrOptions.if_gain.max)">
+                            ⚠ Value outside valid range
+                        </p>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">SDR Bandwidth (kHz)</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select x-model="$store.config.form.sdr_bandwidth">
+                                    <template x-for="option in ($store.config.sdrOptions && $store.config.sdrOptions.bandwidth ? $store.config.sdrOptions.bandwidth.options : [])" :key="option">
+                                        <option :value="option" x-text="option + ' kHz'"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="help" x-show="$store.config.sdrOptions && $store.config.sdrOptions.bandwidth">
+                            Frequency span in kHz for each recording. Default: <span x-text="$store.config.sdrOptions?.bandwidth?.default"></span> kHz. Can be overridden per capture set.
+                        </p>
+                    </div>
+
+                    
+
+                    <!-- SDR shutdown policy -->
+                    <div class="box" style="background-color: #1a1a1a; border: 1px solid #333; padding: 0.75rem; margin-top: 1rem;">
+                        <label class="checkbox">
+                            <input type="checkbox" x-model="$store.config.form.sdr_shutdown_after_recording">
+                            Shutdown SDR after recording
+                        </label>
+                        <p class="help" style="margin-top: 0.5rem;">
+                            Recommended setting is 'on'. Turn on to minimize idle power and device temperature. Turn off to keep the SDR session open between recordings and reduce startup time. When off, do not unplug the SDR/USB while active; the app cannot reconnect. (Restart after FFT size change.)
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Spectrum Analysis Tab -->
+                <div x-show="$store.config.activeTab === 'spectrum'" x-cloak>
+                    <!-- FFT Size moved from SDR tab -->
+                    <div class="field">
+                        <label class="label">FFT Size</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select x-model="$store.config.form.fft_size">
+                                    <option value="4096">4096</option>
+                                    <option value="8192">8192</option>
+                                    <option value="16384">16384</option>
+                                    <option value="32768">32768</option>
+                                    <option value="65536">65536</option>
+                                    <option value="131072">131072</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="help">FFT size for spectrum analysis (higher values = better frequency resolution but slower processing)</p>
+                    </div>
+
+
+                    <!-- Min/Max editor -->
+                    <div x-show="$store.config.ui.spectrumDbEditMode === 'minmax'" x-cloak>
+                        <div class="columns is-mobile" style="gap: 1rem;">
+                            <div class="column">
+                                <div class="field">
+                                    <label class="label">Minimum dB Level</label>
+                                    <div class="control">
+                                        <input x-model="$store.config.form.min_db" @input="$store.config.syncUiFromForm()" class="input" type="number" min="-120" max="0" step="1">
+                                    </div>
+                                    <p class="help">Minimum dB level for spectrum plot color scaling</p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="field">
+                                    <label class="label">Maximum dB Level</label>
+                                    <div class="control">
+                                        <input x-model="$store.config.form.max_db" @input="$store.config.syncUiFromForm()" class="input" type="number" min="-120" max="0" step="1">
+                                    </div>
+                                    <p class="help">Maximum dB level for spectrum plot color scaling</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Noise floor + Dynamic range editor -->
+                    <div x-show="$store.config.ui.spectrumDbEditMode === 'noisefloor'" x-cloak>
+                        <div class="columns is-mobile" style="gap: 1rem;">
+                            <div class="column">
+                                <div class="field">
+                                    <label class="label">Noise floor (dB)</label>
+                                    <div class="control">
+                                        <input x-model.number="$store.config.ui.spectrum_noise_floor_db" @input="$store.config.syncFormFromUi()" class="input" type="number" min="-120" max="0" step="1">
+                                    </div>
+                                    <p class="help">Equivalent to minimum dB level</p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="field">
+                                    <label class="label">Dynamic range (dB)</label>
+                                    <div class="control">
+                                        <input x-model.number="$store.config.ui.spectrum_dynamic_range_db" @input="$store.config.syncFormFromUi()" class="input" type="number" min="1" max="240" step="1">
+                                    </div>
+                                    <p class="help">Maximum dB will be noise_floor + dynamic_range</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="field" style="margin-top: 1rem; padding: 1rem; background-color: #1a1a1a; border-radius: 6px; border: 1px solid #333;">
+                        <!-- Edit mode selector -->
+                        <label class="label" style="margin-bottom: 0.25rem; margin-top: 0.25rem;">Edit dB values as</label>
+                        <div class="control is-flex is-align-items-center db-mode-radio" style="gap: 1.5rem;">
+                            <label class="radio">
+                                <input type="radio" name="spectrumDbEditMode" value="noisefloor" x-model="$store.config.ui.spectrumDbEditMode" @change="$store.config.setDbEditMode($event.target.value)">
+                                <span>Noise floor + Dynamic range</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="spectrumDbEditMode" value="minmax" x-model="$store.config.ui.spectrumDbEditMode" @change="$store.config.setDbEditMode($event.target.value)">
+                                <span>Min/Max</span>
+                            </label>
+                        </div>
+                        <p class="help">This only changes how you edit the values; the configuration is always stored as min/max.</p>
+
+
+                        <!-- Calibration Button -->
+                        <label style="margin-top: 1.0rem;" class="label">dB Range Calibration</label>
+                        <p class="help">Test different dB scaling ranges by generating 7 spectrum plots with shifted dB values (±3, ±6, ±12 dB from current settings). This helps find optimal dB ranges for your signals. <strong>Note:</strong> This may take several minutes to complete.</p>
+                        <div class="control" style="margin-top: 0.75rem;">
+                            <button class="button is-primary is-small" @click="$store.config.startCalibration()" :disabled="$store.app.status.recording">
+                                <span x-text="$store.app.status.recording ? 'Recording in Progress...' : 'Start Calibration Recording'"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- UI Settings Tab -->
+                <div x-show="$store.config.activeTab === 'ui-settings'" x-cloak>
+                    <div class="field">
+                        <label class="label">Status refresh interval (seconds)</label>
+                        <div class="control">
+                            <input 
+                                class="input" 
+                                type="number" 
+                                min="0" 
+                                step="1" 
+                                placeholder="0 disables automatic refresh (default 2)"
+                                x-bind:value="$store.app.statusPollIntervalSec ?? ''"
+                                @input="$store.app.setStatusPollInterval($event.target.value)"
+                            >
+                        </div>
+                        <p class="help">Set to 0 to disable automatic status refresh. Default is 2 seconds.</p>
+                        <p class="help has-text-danger" x-show="$store.app.statusPollIntervalSec === 0" x-cloak>Automatic status refresh is OFF.</p>
+                    </div>
+
+                </div>
+
+                <!-- ROI Management Tab -->
+                <div x-show="$store.config.activeTab === 'roi'" x-cloak>
+                    <!-- Section Headline -->
+                    <h3 class="title is-5" style="margin-bottom: 0.75rem;">Region of Interest Processing</h3>
+                    
+                    <!-- Enable ROI processing toggle -->
+                    <div class="field" style="margin-bottom: 0.75rem;">
+                        <label class="checkbox">
+                            <input type="checkbox" x-model="$store.config.roisProcessingEnabled">
+                            Enable
+                        </label>
+                        <div><span class="help">ROI processing automatically generates additional zoomed-in spectrum plots and RMS data for defined frequency regions. All ROIs from a base capture set are grouped into a single ROI capture set (with "_ROI" suffix). Changes are saved with the main Save button.</span></div>
+                    </div>
+
+                    <!-- ROI Table -->
+                    <div x-show="$store.config.roisProcessingEnabled" x-cloak>
+                        <div class="table-container">
+                            <table class="table is-striped is-hoverable is-fullwidth roi-table-compact" style="background-color: transparent; border: 1px solid #333;">
+                                <thead>
+                                    <tr>
+                                        <th>ROI ID</th>
+                                        <th>Capture Set</th>
+                                        <th>Capture Spec</th>
+                                        <th style="text-align: right;">Center (kHz)</th>
+                                        <th style="text-align: right;">Span (kHz)</th>
+                                        <th style="text-align: right;">Margin (kHz)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(r, idx) in $store.config.roisWorking" :key="r.roi_id + '-' + idx">
+                                        <tr @click="$store.config.selectRoi(idx)" :class="{ 'is-selected': $store.config.roiSelectedIndex === idx }" style="cursor: pointer;">
+                                            <td x-text="r.roi_id"></td>
+                                            <td x-text="r.base_capture_set_id"></td>
+                                            <td x-text="r.capture_spec_id"></td>
+                                            <td style="text-align: right;" x-text="r.center_khz"></td>
+                                            <td style="text-align: right;" x-text="r.span_khz"></td>
+                                            <td style="text-align: right;" x-text="(r.margin_khz !== undefined ? r.margin_khz : '')"></td>
+                                        </tr>
+                                    </template>
+                                    <tr x-show="$store.config.roisWorking.length === 0">
+                                        <td colspan="6" class="has-text-centered has-text-grey">No ROIs defined</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Add ROI Button (only when not editing) -->
+                        <div class="field" style="margin-top: 0.5rem;" x-show="$store.config.roiEditMode === 'none'" x-cloak>
+                            <button class="button is-primary is-small" @click="$store.config.startAddRoi()">+ Add ROI</button>
+                        </div>
+                    </div>
+
+                    <!-- ROI Editor -->
+                    <div x-show="$store.config.roisProcessingEnabled && $store.config.roiEditMode !== 'none'" x-cloak style="margin-top: 1rem; padding: 0.75rem; border: 1px solid #333; border-radius: 6px;">
+                        <!-- Row 1: Capture Set + Capture Spec -->
+                        <div class="field is-grouped">
+                            <div class="control is-expanded">
+                                <label class="label">Capture Set</label>
+                                <div class="select is-fullwidth">
+                                    <select x-model="$store.config.roiForm.base_capture_set_id" @change="$store.config.updateAvailableCaptureSpecs($event.target.value)">
+                                        <option value="" disabled>Select capture set</option>
+                                        <template x-for="id in $store.config.availableCaptureSets" :key="id">
+                                            <option :value="id" x-text="id"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control is-expanded">
+                                <label class="label">Capture Spec ID</label>
+                                <div class="select is-fullwidth">
+                                    <select x-model="$store.config.roiForm.capture_spec_id" :disabled="!$store.config.roiForm.base_capture_set_id" @change="$store.config.updateSelectedCaptureSpec($event.target.value)">
+                                        <option value="" disabled>Select capture spec</option>
+                                        <template x-for="spec in $store.config.availableCaptureSpecs" :key="spec.id">
+                                            <option :value="spec.id" x-text="spec.id"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <p class="help has-text-info" x-show="$store.config.selectedCaptureSpec" x-text="'Freq range: ' + $store.config.getSpecFreqRangeText()" x-cloak></p>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Center + Span + Margin -->
+                        <div class="field is-grouped">
+                            <div class="control is-expanded">
+                                <label class="label">Center (kHz)</label>
+                                <input class="input" type="number" step="0.1" x-model.number="$store.config.roiForm.center_khz">
+                            </div>
+
+                            <div class="control is-expanded">
+                                <label class="label">Span (kHz)</label>
+                                <input class="input" type="number" step="0.1" x-model.number="$store.config.roiForm.span_khz">
+                            </div>
+
+                            <div class="control is-expanded">
+                                <label class="label">Margin (kHz)</label>
+                                <input class="input" type="number" step="0.1" x-model.number="$store.config.roiForm.margin_khz" placeholder="optional">
+                                <p class="help">Margin extends image crop but is excluded from RMS</p>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Calculated Frequency Ranges -->
+                        <div class="field" x-show="$store.config.getRoiFrequencyRanges()" x-cloak style="margin-top: 0.5rem; padding: 0.75rem; background-color: #1a1a1a; border-radius: 4px; border: 1px solid #333;">
+                            <template x-if="$store.config.getRoiFrequencyRanges()">
+                                <div>
+                                    <p class="help" style="margin-bottom: 0.25rem;"><strong>Calculated ranges:</strong></p>
+                                    <p class="help" x-text="'Core ROI (RMS): ' + $store.config.getRoiFrequencyRanges().core"></p>
+                                    <p class="help" x-show="$store.config.getRoiFrequencyRanges().withMargin" x-text="'With margin (image): ' + $store.config.getRoiFrequencyRanges().withMargin" x-cloak></p>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Row 4: ROI ID + Action Buttons -->
+                        <div class="field is-grouped">
+                            <div class="control" style="width: 50%;">
+                                <label class="label">ROI ID</label>
+                                <input class="input" type="text" x-model="$store.config.roiForm.roi_id" placeholder="e.g. 40m_mid">
+                                <p class="help">Only alphanumeric, underscore, dash, and space allowed (max 50 chars)</p>
+                            </div>
+                            
+                            <div class="control" style="width: 50%; display: flex; align-items: flex-end; justify-content: flex-end; gap: 0.5rem; padding-right: 10px">
+                                <button class="button is-primary is-small" @click="$store.config.applyRoiForm()">
+                                    <span x-text="$store.config.roiEditMode === 'add' ? 'Add ROI' : 'Apply Changes'"></span>
+                                </button>
+                                <button class="button is-small" style="border-color:#DC143C; color:#DC143C" @click="$store.config.deleteSelectedRoi()" x-show="$store.config.roiEditMode === 'edit'" x-cloak>Delete</button>
+                                <button class="button is-small" @click="$store.config.cancelRoiEdit()">Cancel</button>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <p class="help">Note: ROI changes are saved when you press the main Save button.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Tab -->
+                <div x-show="$store.config.activeTab === 'about'" x-cloak>
+                    <div class="content">
+                        <p style="color: #b5b5b5; margin-bottom: 1.5rem;">QRM monitoring and spectrum analysis tool for amateur radio.</p>
+                        
+                        <p style="color: #a0a0a0; font-size: 0.9rem; margin-bottom: 0.5rem;">by DO1ZL [2025] • GPLv3</p>
+
+                        <p style="color: #808080; font-size: 0.85rem; margin-bottom: 1.5rem;" x-show="$store.config.form.version">
+                            <span style="color: #909090;">Version:</span> <span x-text="$store.config.form.version"></span>
+                        </p>
+
+                        <div style="margin-top: 1.5rem; font-size: 0.9rem;">
+                            <p style="margin-bottom: 0.5rem; color: #a0a0a0;">
+                                <span style="color: #909090;">Backend:</span>
+                                <span style="color: #808080;">GNU Radio 3.10, Python 3.10+, gr-osmosdr, NumPy, Matplotlib, Bottle, Waitress, APScheduler</span>
+                            </p>
+
+                            <p style="color: #a0a0a0;">
+                                <span style="color: #909090;">Frontend:</span>
+                                <span style="color: #808080;">Alpine.js, Bulma CSS, Panzoom, PhotoSwipe, iziToast, cronstrue</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Messages and Actions (always visible) -->
+            <div style="margin-top: 2rem;">
+                <div x-show="$store.config.error" class="notification is-danger">
+                    <span x-text="$store.config.error"></span>
+                </div>
+                
+                <div x-show="$store.config.success" class="notification is-success">
+                    <span x-text="$store.config.success"></span>
+                </div>
+                
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-primary" @click="$store.config.saveConfiguration()" :disabled="$store.config.saving">                
+                            <span x-show="!$store.config.saving">Save</span>
+                            <span x-show="$store.config.saving">Saving...</span>
+                        </button>
+                    </div>
+                    <div class="control">
+                        <button class="button" @click="$store.config.closeModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Capture Set Info Modal Overlay (nested within config modal) -->
+    <div class="modal" :class="{ 'is-active': $store.config.showCaptureSetInfo }" x-cloak style="z-index: 100;">
+        <div class="modal-background" @click="$store.config.closeCaptureSetInfo()"></div>
+        <div class="modal-card" style="max-width: 900px;">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Capture Set Details</p>
+                <button class="delete" aria-label="close" @click="$store.config.closeCaptureSetInfo()"></button>
+            </header>
+            <section class="modal-card-body">
+                <template x-if="$store.config.getCaptureSetInfoData()">
+                    <div>
+                        <h3 class="title is-5" style="margin-bottom: 1rem;" x-text="'Set ID: ' + $store.config.getCaptureSetInfoData().captureSetId"></h3>
+                        <div style="overflow-x: auto;">
+                            <table class="table is-fullwidth is-striped is-hoverable is-narrow capture-set-table-compact" style="background-color: transparent;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 3rem; text-align: right;">#</th>
+                                        <th style="text-align: right;">Spec ID</th>
+                                        <th style="text-align: right;">Freq Range (kHz)</th>
+                                        <th style="text-align: right;">Center (kHz)</th>
+                                        <th style="text-align: right;">Span (kHz)</th>
+                                        <th style="text-align: right;">Margin (kHz)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="spec in $store.config.getCaptureSetInfoData().specs" :key="spec.index">
+                                        <tr>
+                                            <td style="text-align: right;" x-text="spec.index"></td>
+                                            <td style="text-align: right; font-weight: 500;" x-text="spec.id"></td>
+                                            <td style="text-align: right;" x-text="spec.freqRange"></td>
+                                            <td style="text-align: right;" x-text="spec.center"></td>
+                                            <td style="text-align: right;" x-text="spec.span"></td>
+                                            <td style="text-align: right;" x-text="spec.margin"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="!$store.config.getCaptureSetInfoData()">
+                    <div class="notification is-warning">
+                        <p>No information available for this capture set.</p>
+                    </div>
+                </template>
+            </section>
+            <footer class="modal-card-foot" style="justify-content: flex-end;">
+                <button class="button" @click="$store.config.closeCaptureSetInfo()">Close</button>
+            </footer>
+        </div>
+    </div>
+</div>

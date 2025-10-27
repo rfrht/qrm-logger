@@ -1,0 +1,18 @@
+
+# Generated output files
+_recordings/****
+
+config.json
+#roi-config.json
+
+# Distribution files
+dist_qrm-logger.zip
+temp_dist/
+
+# Python
+__pycache__/
+
+# IDEs
+.vscode/
+.idea/
+

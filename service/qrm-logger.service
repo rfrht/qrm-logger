@@ -1,0 +1,22 @@
+## sudo cp qrm-logger.service /etc/systemd/system/qrm-logger.service
+
+## sudo systemctl enable qrm-logger.service
+## sudo systemctl disable qrm-logger.service
+
+## sudo systemctl start qrm-logger.service
+## sudo systemctl stop qrm-logger.service
+## sudo systemctl restart qrm-logger.service
+## systemctl status qrm-logger
+
+[Unit]
+Description=qrm-logger
+After=network.target
+
+[Service]
+ExecStart=/home/pi/qrm-logger/qrm-logger.sh
+Restart=always
+User=pi
+WorkingDirectory=/home/pi/qrm-logger
+
+[Install]
+WantedBy=multi-user.target

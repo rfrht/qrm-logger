@@ -1,0 +1,133 @@
+<!-- RMS Data Table Component -->
+<div x-show="$store.app.viewMode === 'rms'" x-cloak>
+        <style>
+        /* Scope alignment rules to this component's RMS table only */
+
+        .rms-table thead th:first-of-type,
+        .rms-table tbody td:first-of-type {
+            text-align: left !important;
+        }
+
+        /* First four columns: minimal width */
+        .rms-table thead th:nth-of-type(-n+4),
+        .rms-table tbody td:nth-of-type(-n+4) {
+            width: 1px !important;
+            white-space: nowrap !important;
+        }
+
+        .rms-table thead th:nth-of-type(n+5),
+        .rms-table tbody td:nth-of-type(n+5) {
+            text-align: right !important;
+            font-weight: bold !important;
+
+        }
+        .rms-value-cell {
+            font-weight: bold !important;
+        }
+
+
+    </style>
+
+    <div class="is-size-4 has-text-weight-bold mb-4">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+        </div>
+        <div class="columns is-mobile" style="margin-bottom: 5px">
+            <!-- Title Row: RMS Data label only -->
+            <div class="column" style="padding-bottom: 5px">
+                <span>RMS Data</span>
+            </div>
+        </div>
+        <!-- Controls Row 1: Data Type (Truncated/Standard), left-aligned -->
+        <div class="columns is-mobile" style="margin-bottom: 5px">
+            <div class="column" style="padding-bottom: 5px">
+                <div class="buttons has-addons">
+                    <button 
+                        class="button is-small" 
+                        :class="$store.rms.dataType === 'truncated' ? 'is-primary' : 'is-dark'"
+                        @click="$store.rms.setDataType('truncated')"
+                        title="Truncated RMS - caps top 5% strongest signals to provide interference measurement less affected by strong narrowband signals"
+                    >
+                        Truncated
+                    </button>
+                    <button 
+                        class="button is-small" 
+                        :class="$store.rms.dataType === 'standard' ? 'is-primary' : 'is-dark'"
+                        @click="$store.rms.setDataType('standard')"
+                        title="Standard RMS - includes all frequency bins"
+                    >
+                        Standard
+                    </button>
+                </div>
+            </div>
+        </div
+        <!-- Controls Row 2: View Mode (Raw/Delta), left-aligned -->
+        <div class="columns is-mobile" style="margin-bottom: 5px">
+            <div class="column" style="padding-bottom: 5px">
+                <div class="buttons has-addons">
+                    <button 
+                        class="button is-small" 
+                        :class="$store.rms.viewMode === 'raw' ? 'is-primary' : 'is-dark'"
+                        @click="$store.rms.setViewMode('raw')"
+                        title="Raw Values - shows actual RMS values"
+                    >
+                        Raw Values
+                    </button>
+                    <button 
+                        class="button is-small" 
+                        :class="$store.rms.viewMode === 'delta' ? 'is-primary' : 'is-dark'"
+                        @click="$store.rms.setViewMode('delta')"
+                        title="Delta Values - shows difference from previous row"
+                    >
+                        Delta Values
+                    </button>
+                </div>
+            </div>
+        </div
+    </div>
+    
+    <div x-show="$store.rms.dataLoading" class="notification is-warning" style="font-size: 1rem;">
+        Loading RMS data...
+    </div>
+    
+    <div x-show="$store.rms.dataError" class="notification is-danger">
+        <span x-text="$store.rms.dataError"></span>
+    </div>
+    
+    <div x-show="!$store.rms.dataLoading && $store.rms.data && $store.rms.data.length > 0" class="table-container" x-data="{ get visibleData() { return $store.rms.getVisibleData() }, get columnKeys() { return $store.rms.getColumnKeys() } }">
+        <table class="table is-fullwidth is-striped is-hoverable is-narrow rms-table" style="font-size: 0.85rem;" :key="$store.rms.dataType + '-' + $store.rms.viewMode">
+            <thead>
+                <tr>
+                    <template x-for="key in columnKeys" :key="key">
+                        <th x-text="key" style="padding: 0.25rem 0.5rem; white-space: nowrap;"></th>
+                    </template>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="(row, index) in visibleData" :key="$store.rms.dataType + '-' + $store.rms.viewMode + '-' + index">
+                    <tr>
+                        <template x-for="key in columnKeys" :key="$store.rms.dataType + '-' + $store.rms.viewMode + '-' + key">
+                            <td 
+                                x-text="(key === 'date' ? ($store.rms.shouldShowDate(index, visibleData) ? row[key] : '') : (row[key] == -1 && $store.rms.viewMode === 'raw' ? 'N/A' : row[key]))" 
+                                :style="'padding: 0.25rem 0.5rem; white-space: nowrap; ' + ($store.rms.shouldColorCell(key) && !(row[key] == -1 && $store.rms.viewMode === 'raw') ? 'color: ' + ($store.rms.shouldUseDeltaColoring() ? $store.rms.getDeltaColor(row[key]) : $store.rms.getColor(row[key])) + ';' : '')"
+                            ></td>
+                        </template>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Show All button below the table when more than the recent entries are available -->
+    <div class="mt-3" x-show="!$store.rms.showAll && $store.rms.hasMoreThanEntriesLimit()" x-cloak>
+        <button class="button is-small is-warning is-outlined" @click="$store.rms.showAllEntries()">Show All</button>
+    </div>
+    
+    <div x-show="!$store.rms.dataLoading && $store.rms.data && $store.rms.data.length === 0" class="notification is-warning">
+        No RMS data available.
+    </div>
+    
+    <!-- RMS Color Threshold Configuration Component -->
+    <div id="rms-thresholds-placeholder"></div>
+    
+    <hr>
+</div>

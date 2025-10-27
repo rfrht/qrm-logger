@@ -1,0 +1,70 @@
+<!-- RMS Color Threshold Configuration Component -->
+<div x-cloak x-show="$store.rms.data && $store.rms.data.length > 0" class="mt-4">
+    <div class="box" style="background: rgba(255, 255, 255, 0.05); border: 1px solid #4a4a4a;">
+        <h5 class="is-size-6 has-text-weight-bold mb-3" style="color: #dbdbdb;">RMS Color Thresholds</h5>
+        
+        <div class="columns is-multiline">
+            <div class="column is-4">
+                <div class="field">
+                    <label class="label is-small" style="color: #b5b5b5;">Medium Threshold</label>
+                    <div class="control">
+                        <input 
+                            class="input is-small" 
+                            type="number" 
+                            min="0" 
+                            max="200" 
+                            x-model="$store.rms.thresholds.medium"
+                            @change="$store.rms.updateThresholds()"
+                            style="font-size: 0.8rem;"
+                        >
+                    </div>
+                    <p class="help is-size-7" style="color: #ffdd57;">Medium starts here</p>
+                </div>
+            </div>
+            
+            <div class="column is-4">
+                <div class="field">
+                    <label class="label is-small" style="color: #b5b5b5;">High Threshold</label>
+                    <div class="control">
+                        <input 
+                            class="input is-small" 
+                            type="number" 
+                            min="0" 
+                            max="200" 
+                            x-model="$store.rms.thresholds.high"
+                            @change="$store.rms.updateThresholds()"
+                            style="font-size: 0.8rem;"
+                        >
+                    </div>
+                    <p class="help is-size-7" style="color: #ffa500;">High starts here</p>
+                </div>
+            </div>
+            
+            <div class="column is-4">
+                <div class="field">
+                    <label class="label is-small" style="color: #b5b5b5;">Critical Threshold</label>
+                    <div class="control">
+                        <input 
+                            class="input is-small" 
+                            type="number" 
+                            min="0" 
+                            max="200" 
+                            x-model="$store.rms.thresholds.critical"
+                            @change="$store.rms.updateThresholds()"
+                            style="font-size: 0.8rem;"
+                        >
+                    </div>
+                    <p class="help is-size-7" style="color: #CC0000;">Critical starts here</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="is-size-7" style="color: #888; margin-top: 0.5rem;">
+            <strong>Levels:</strong> 
+            <span style="color: #666666;">■ Low (&lt;<span x-text="$store.rms.thresholds.medium"></span>)</span> • 
+            <span style="color: #ffdd57;">■ Medium (<span x-text="$store.rms.thresholds.medium"></span>-<span x-text="$store.rms.thresholds.high"></span>)</span> • 
+            <span style="color: #ffa500;">■ High (<span x-text="$store.rms.thresholds.high"></span>-<span x-text="$store.rms.thresholds.critical"></span>)</span> • 
+            <span style="color: #CC0000;">■ Critical (≥<span x-text="$store.rms.thresholds.critical"></span>)</span>
+        </div>
+    </div>
+</div>
