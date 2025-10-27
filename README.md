@@ -61,7 +61,7 @@ The regular python install from the App Store is **not sufficient** to run the a
 
 **Linux:**
 - Install [Miniforge](https://github.com/conda-forge/miniforge)
-- Follow the instructions regarding shell activation
+- The installer will ask whether to enable automatic shell activation. Recommendation: choose 'yes', then disable automatic base environment activation as suggested there. Also see [here](https://linsnotes.com/posts/miniconda-installation-on-linux-should-you-enable-auto-initialization/)
 
 **Mac:**
 - Install miniconda or miniforge using brew, or use the download.
