@@ -46,6 +46,15 @@ qrm-logger is ready to run after installing the conda environment - **no build s
 - **SDR Hardware**: RTL-SDR v4 (or GNU Radio compatible devices)
 
 
+### Get the code
+
+```bash
+git clone https://github.com/do1zl/qrm-logger
+cd qrm-logger
+```
+
+**Alternative:** If you don't want to install git - go to the ```<> Code``` dropdown on top of this page and and choose 'Download ZIP'
+
 ### Install conda package manager
 
 You need a conda package manager like [Miniforge](https://github.com/conda-forge/miniforge) or [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install) in order to install the dependencies of the application.
@@ -56,8 +65,8 @@ The regular python install from the App Store is **not sufficient** to run the a
 
 
 **Windows:** 
-- Install [Miniforge](https://github.com/conda-forge/miniforge)
-- Open "Miniforge Prompt" from start menu
+- Install [Miniforge](https://github.com/conda-forge/miniforge). Recommended install settings: Install for "Just me". Default Location. Options: Check "Create start menu shortcuts". Uncheck "Add miniforge3 to path". Uncheck "Register Miniforge3 as my default Python".
+- Open "Miniforge Prompt" from start menu. You will see a prompt prefix ```(base)```
 
 **Linux:**
 - Install [Miniforge](https://github.com/conda-forge/miniforge)
@@ -69,14 +78,6 @@ The regular python install from the App Store is **not sufficient** to run the a
 
 
 
-### Get the code
-
-```bash
-git clone https://github.com/do1zl/qrm-logger
-cd qrm-logger
-```
-
-**Alternative** if you do not want to install git: Go to the ```<> Code``` dropdown on top of this page and and choose 'Download ZIP'
 
 ### Create environment and install dependencies
 
@@ -85,22 +86,32 @@ Read more about conda [here](https://docs.conda.io/en/latest/).
 
 The following steps use `mamba` for the CLI commands. You can substitute this command with `conda` in case you are running miniconda. Mamba is a replacement conda package manager, both use the same command line syntax.
 
+**Important:** You must execute these commands from a conda shell. 
+A conda shell always displays a prompt prefix like ```(base)```. 
+If you cannot see this prefix in your terminal, check 'Install conda package manager' section again.
+
+
 ```
-# List existing environments
-mamba env list
+# Important: You must execute these commands from a conda shell
+
+# Go to the project directory
+cd qrm-logger
 
 # Create environment from environment.yml file
 # This will create 'qrm-logger' environment and install all required packages 
 mamba env create -f environment.yml
 
-# or choose a different environment name
+# or choose a different environment name (optional)
 # mamba env create -f environment.yml -n qrm1
 
-# Activate the environment
+# Activate the environment. Your prompt prefix will change to (qrm-logger)
 mamba activate qrm-logger
 
-# Check installed packages
+# Check installed packages (optional)
 mamba list
+
+# List existing environments (optional)
+mamba env list
 
 ```
 
