@@ -77,6 +77,17 @@ cp -r /usr/local/lib/python3.13/site-packages/gnuradio/sdrplay3/ ~/miniforge3/en
 
 **Note**: For windows, see [issue #57](https://github.com/fventuri/gr-sdrplay3/issues/57) for details. I was unable to compile the driver under Windows. Since I run the application on linux, I don't care.
 
+## Configure qrm-logger
+
+After successful compilation you must configure qrm-logger to use the device.
+Edit 
+`config/sdr_hardware.py` in the qrm-logger source:
+
+```
+device_name = DEVICE_NAME_SDRPLAY
+```
+Then delete the config.json file to have it recreated on startup. Start the application and configure the device in UI config tab 'SDR'.
+
 ## Remarks
 
 I cam across some problems / specific behaviour when using SDRplay.
