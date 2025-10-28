@@ -137,9 +137,9 @@ Currently, only **RTL-SDR** is supported out-of-the-box, but it should be easy t
 
 | Device name        | package     | Remarks                                                                                                                                                 |
 |--------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| RTL-SDR v4         | `gr‑osmosdr`  | Tested on Windows 11 and Rasberry Pi OS                                                                                                                 |
+| RTL-SDR v4         | `gr‑osmosdr`  | Tested on Windows 11 and Raspberry Pi OS                                                                                                                 |
 | RTL-SDR (other)    | `gr‑osmosdr`  | Not tested yet - but should work out-of-the-box                                                                                                         |
-| SDRplay&nbsp;RSP1A | `gr‑sdrplay3` | Tested on Rasberry Pi OS. Package is **not** available in conda-forge and requires compilation of a 3rd-party driver. See [here](docs/sdrplay_notes.md) |
+| SDRplay&nbsp;RSP1A | `gr‑sdrplay3` | Tested on Raspberry Pi OS. Package is **not** available in conda-forge and requires compilation of a 3rd-party driver. See [here](docs/sdrplay_notes.md) |
 
 
  See [sdr_support.md](docs/sdr_support.md) for information on how to add support for other devices.
