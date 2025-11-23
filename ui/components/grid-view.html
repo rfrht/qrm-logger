@@ -1,8 +1,12 @@
 <!-- Grid View Component -->
-<div x-data="{ async getGrids() { return Alpine.store('grid').getData() } }" x-init="getGrids()" x-cloak>
-  <!-- Controls Row: Plot Type Toggle (Waterfall/Average) -->
+<div x-data="{ async refresh() { return Alpine.store('grid').getData() } }" x-init="refresh()" x-cloak>
+  <!-- Controls Row: Plot Type + Tab Toggle -->
   <div class="columns is-mobile" style="margin-bottom: 10px">
-    <div class="column" style="padding-bottom: 5px">
+    <div class="column" style="padding-bottom: 5px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; flex-direction: column; align-items: flex-start;">
+      <div class="buttons has-addons" x-show="$store.grid.isTimeSliceEnabled()" x-cloak>
+        <button class="button is-small" :class="$store.grid.gridTab === 'daily' ? 'is-primary' : 'is-dark'" @click="$store.grid.setGridTab('daily')">Daily</button>
+        <button class="button is-small" :class="$store.grid.gridTab === 'timeslices' ? 'is-primary' : 'is-dark'" @click="$store.grid.setGridTab('timeslices')">Time Slices</button>
+      </div>
       <div class="buttons has-addons">
         <button
           class="button is-small"
@@ -24,8 +28,46 @@
     </div>
   </div>
 
-  <!-- Outer loop over days -->
-  <template x-for="(day, dIndex) in ($store.grid.getVisibleGroupedData() || [])" :key="day.date">
+  <!-- Time Slices view -->
+  <template x-if="$store.grid.gridTab === 'timeslices'">
+    <div>
+      <template x-for="ts in ($store.grid.getVisibleTimeSlices() || [])" :key="ts.hour">
+        <div style="margin-bottom: 30px;">
+          <!-- Header row: hour badge (left) + shared scale controls (right) -->
+          <div class="is-size-6 has-text-weight-semibold" style="margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            <div>
+              <span class="tag is-large"
+                    style="background: transparent;
+                           color: darkorange;
+                           border: 1px dashed darkorange;
+                           padding: 0.75em 1.25em;
+                           font-weight: 700;
+                           font-size: 1.15rem;
+                           font-family: 'Courier New', monospace;">
+                <span x-text="String(ts.hour).padStart(2,'0')"></span>:00
+              </span>
+            </div>
+            <div class="is-flex is-align-items-center" style="gap: 0.4rem;">
+              <button class="button is-small is-dark" title="Decrease image width" :disabled="$store.grid.imageScalePercent <= 10" @click="$store.grid.decImageScale()">−</button>
+              <button class="button is-small is-dark" title="Increase image width" :disabled="$store.grid.imageScalePercent >= 100" @click="$store.grid.incImageScale()">+</button>
+              <button class="button is-small is-dark" title="Reset to 100%" :disabled="$store.grid.imageScalePercent === 100" @click="$store.grid.resetImageScale()">100%</button>
+            </div>
+          </div>
+          <div>
+            <img :src="$store.grid.getTimesliceImage(ts, true)"
+                 @click="$store.grid.openZoomTimeslice(ts)"
+                 :style="'cursor: pointer; height: auto; max-width: 100%; display: block; margin: 0 auto; width: ' + $store.grid.imageScalePercent + '%;'" />
+          </div>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <!-- Daily view -->
+  <template x-if="$store.grid.gridTab === 'daily'">
+    <div>
+      <!-- Outer loop over days -->
+      <template x-for="(day, dIndex) in ($store.grid.getVisibleGroupedData() || [])" :key="day.date">
     <div>
       <div style="margin-bottom: 30px">
         <span style="display: inline-block;
@@ -135,8 +177,11 @@
       </template>
     </div>
   </template>
-  <!-- Summary (render only when available) at bottom -->
-  <template x-if="$store.grid.getSummary()">
+    </div>
+  </template>
+
+  <!-- Summary (render only when available) at bottom; only for Daily view -->
+  <template x-if="$store.grid.gridTab === 'daily' && $store.grid.getSummary()">
     <div class="has-text-grey is-size-7" style="margin: 0.75rem 0 20px 0;">
       <span style="color: #b5b5b5;">grid summary:</span>
       <span style="margin-left: 0.5rem;">days covered: <span x-text="$store.grid.getSummary().days"></span></span>

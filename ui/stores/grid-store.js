@@ -39,6 +39,8 @@ document.addEventListener('alpine:init', () => {
     
     // State
     data: [],
+    timeslices: {},
+    gridTab: 'daily', // 'daily' | 'timeslices'
     showAll: false,
     imageScalePercent: 100,
     plotType: 'waterfall',
@@ -54,6 +56,12 @@ document.addEventListener('alpine:init', () => {
     getVisibleData() {
         const id = Alpine.store('app').currentCaptureSetId
         const arr = this.data && this.data[id]
+        return Array.isArray(arr) ? arr : []
+    },
+
+    getVisibleTimeSlices() {
+        const id = Alpine.store('app').currentCaptureSetId
+        const arr = this.timeslices && this.timeslices[id]
         return Array.isArray(arr) ? arr : []
     },
 
@@ -110,12 +118,28 @@ document.addEventListener('alpine:init', () => {
 
     // Actions
     async getData() {
+      // Delegate to current tab (guard against disabled feature)
+      if (this.gridTab === 'timeslices') {
+        if (!this.isTimeSliceEnabled()) {
+          this.gridTab = 'daily'
+        } else {
+          return this.getTimesliceData()
+        }
+      }
       const id = Alpine.store('app').currentCaptureSetId
       const pt = this.plotType || 'waterfall'
       const response = await fetch(`/grids?capture_set_id=${encodeURIComponent(id)}&plot_type=${encodeURIComponent(pt)}`)
       const json = await response.json()
       // API returns array for the capture set; store it under the current set id to keep existing accessors working
       this.data = { [id]: json.data }
+    },
+
+    async getTimesliceData() {
+      const id = Alpine.store('app').currentCaptureSetId
+      const pt = this.plotType || 'waterfall'
+      const response = await fetch(`/timeslice_grids?capture_set_id=${encodeURIComponent(id)}&plot_type=${encodeURIComponent(pt)}`)
+      const json = await response.json()
+      this.timeslices = { [id]: (json && json.data) ? json.data : [] }
     },
 
     // Helper method to get the current grid image based on view mode
@@ -125,6 +149,12 @@ document.addEventListener('alpine:init', () => {
       // Add /output/ prefix to make the path work with the server's output route
       const fullUrl = '/output/' + imageUrl;
       return fullUrl;
+    },
+
+    getTimesliceImage(ts, useResized = true) {
+      const imageUrl = useResized ? (ts.resized || ts.full) : (ts.full || ts.resized)
+      if (!imageUrl) return null
+      return '/output/' + imageUrl
     },
 
 
@@ -284,10 +314,35 @@ document.addEventListener('alpine:init', () => {
       } catch (e) { /* ignore */ }
     },
 
-    
+    openZoomTimeslice(ts) {
+      const zoomImageUrl = this.getTimesliceImage(ts, false) || this.getTimesliceImage(ts, true)
+      const captureSetId = (Alpine.store('app') && Alpine.store('app').currentCaptureSetId) || ''
+      const modalTitle = `${captureSetId} • Time-slice ${String(ts.hour).padStart(2,'0')}:00`
+      this.pushZoomState(zoomImageUrl, modalTitle)
+      this.showZoomModal(zoomImageUrl, modalTitle)
+    },
+
+    setGridTab(tab) {
+      const wantTs = (tab === 'timeslices')
+      const t = (wantTs && this.isTimeSliceEnabled()) ? 'timeslices' : 'daily'
+      if (this.gridTab === t) return
+      this.gridTab = t
+      this.getData()
+    },
+
     // Toggle showAll (non-persistent)
     toggleShowAll() {
       this.showAll = !this.showAll;
+    },
+
+    // Feature flag: Time-slices UI enabled when processing is enabled (regardless of configured hours)
+    isTimeSliceEnabled() {
+      try {
+        const cfg = Alpine.store('config')?.values || {}
+        return !!cfg.timeslice_autogenerate
+      } catch (e) {
+        return false
+      }
     },
 
     // Global image scale controls (affect all images on the page)

@@ -16,7 +16,10 @@ document.addEventListener('alpine:init', () => {
       min_db: 0,
       max_db: 0,
       capture_sets_enabled:[],
-      capture_set_configurations: {}
+      capture_set_configurations: {},
+      // Time-slice dynamic config
+      timeslice_autogenerate: true,
+      timeslice_hours_text: ''
     },
     // ROI editor state (working copy, not saved until Save pressed)
     roisProcessingEnabled: false,
@@ -43,7 +46,10 @@ document.addEventListener('alpine:init', () => {
       min_db: 0,
       max_db: 0,
       capture_sets_enabled:[],
-      capture_set_configurations: {}
+      capture_set_configurations: {},
+      // Time-slice dynamic config (mirrors backend values)
+      timeslice_autogenerate: true,
+      timeslice_hours: []
     },
     sdrOptions: null, // Will be loaded from /sdr-options endpoint
     error: '',
@@ -195,6 +201,16 @@ document.addEventListener('alpine:init', () => {
         if (response.ok) {
           const data = await response.json()
           this.form = { ...data.data }
+          // Initialize Time Slices editing fields
+          try {
+            const hours = Array.isArray(this.form.timeslice_hours) ? this.form.timeslice_hours : []
+            this.form.timeslice_hours_text = hours.join(', ')
+            if (typeof this.form.timeslice_autogenerate !== 'boolean') {
+              this.form.timeslice_autogenerate = !!this.values.timeslice_autogenerate
+            }
+          } catch (e) {
+            this.form.timeslice_hours_text = ''
+          }
           // Ensure configurations mapping exists for UI binding
           if (!this.form.capture_set_configurations || typeof this.form.capture_set_configurations !== 'object') {
             this.form.capture_set_configurations = {}
@@ -272,6 +288,22 @@ document.addEventListener('alpine:init', () => {
           }
         }
 
+        // Parse time-slice hours text => array of ints 0..23
+        const parseHours = (txt) => {
+          if (!txt || typeof txt !== 'string') return []
+          const parts = txt.split(',')
+          const nums = []
+          const seen = new Set()
+          for (const p of parts) {
+            const n = parseInt(p.trim(), 10)
+            if (Number.isFinite(n) && n >= 0 && n <= 23 && !seen.has(n)) {
+              seen.add(n)
+              nums.push(n)
+            }
+          }
+          nums.sort((a,b)=>a-b)
+          return nums
+        }
         const config = {
           rf_gain: parseInt(this.form.rf_gain),
           if_gain: parseInt(this.form.if_gain),
@@ -285,6 +317,9 @@ document.addEventListener('alpine:init', () => {
           capture_sets_enabled: this.form.capture_sets_enabled,
           sdr_shutdown_after_recording: !!this.form.sdr_shutdown_after_recording,
           capture_set_configurations: cfgs,
+          // Time-slice dynamic config
+          timeslice_autogenerate: !!this.form.timeslice_autogenerate,
+          timeslice_hours: parseHours(this.form.timeslice_hours_text || (Array.isArray(this.form.timeslice_hours) ? this.form.timeslice_hours.join(',') : '')),
         }
         
         // Check for invalid values (except dB values and RF gain which can be negative)
@@ -381,6 +416,11 @@ document.addEventListener('alpine:init', () => {
           
           // Update displayed config values
           this.values = data.data.current_config
+          // Sync time-slice UI with saved values
+          try {
+            const hours = Array.isArray(this.values.timeslice_hours) ? this.values.timeslice_hours : []
+            this.form.timeslice_hours_text = hours.join(', ')
+          } catch (e) {}
           
           // Refresh capture set buttons and display to reflect changes
           await Alpine.store('app').refreshCaptureSetIds()

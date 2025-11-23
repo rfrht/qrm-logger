@@ -41,6 +41,7 @@ import copy as _copy
 from qrm_logger.utils.counter import get_counter
 from qrm_logger.utils.counter import inc_counter
 
+from src.qrm_logger.execution.data_exporter import process_timeslice_grids
 
 class Pipeline:
     _instance = None
@@ -212,6 +213,7 @@ class Pipeline:
             capture_set_id = first_run.capture_set_id
             process_grids(capture_set_id, first_run.date_string)
             write_rms(capture_set_id, results,  capture_params)
+            process_timeslice_grids(capture_set_id, capture_params)
 
     def _cleanup_raw_files(self, runs):
         for run in runs:

@@ -74,12 +74,21 @@ def init_capture_sets():
             crop_margin_khz = 5
         )
     )
-    #capture_sets.append(set_hf_full_wide)
+    capture_sets.append(set_hf_full_wide)
 
+    set_vhf_band = CaptureSet("VHF_band", create_vhf_specs())
+    capture_sets.append(set_vhf_band)
 
-    #set_vhf_band = CaptureSet("VHF_band", create_vhf_specs())
-    #capture_sets.append(set_vhf_band)
-
-    #set_uhf_full = CaptureSet("UHF_full", create_uhf_specs())
-    #capture_sets.append(set_uhf_full)
+    set_uhf_full = CaptureSet(
+        id = "UHF_full",
+        specs = create_step_specs(
+            start_mhz = 431,
+            end_mhz = 439,
+            step_mhz = 2,
+            suffix = " MHz",
+            crop_to_step = True,
+            crop_margin_khz= 5
+        )
+    )
+    capture_sets.append(set_uhf_full)
 

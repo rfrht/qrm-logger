@@ -159,7 +159,8 @@ def update_config():
                       'scheduler_cron', 'scheduler_autostart',
                       'fft_size', 'min_db', 'max_db',
                       'capture_sets_enabled', 'sdr_shutdown_after_recording',
-                      'capture_set_configurations'}
+                      'capture_set_configurations',
+                      'timeslice_hours', 'timeslice_autogenerate'}
         provided_keys = set(postdata.keys())
         invalid_keys = provided_keys - valid_keys
         
@@ -568,6 +569,25 @@ def _apply_cache_headers(resp):
         resp.set_header('Pragma', 'no-cache')
         resp.set_header('Expires', '0')
     return resp
+
+
+@route('/timeslice_grids')
+def timeslice_grids():
+    """List available time-slice grids (across days) by hour for a capture set and plot type.
+    Returns entries of the form: { hour, full, resized, last_updated }
+    """
+    try:
+        capture_set_id = request.query.get('capture_set_id')
+        plot_type = request.query.get('plot_type')
+        if not capture_set_id or not plot_type:
+            return HTTPResponse(status=400, body=json.dumps({'error': 'capture_set_id and plot_type are required'}))
+
+        from qrm_logger.imaging.imge_grid_timeslice import get_timeslice_grids
+        elems = get_timeslice_grids(capture_set_id, plot_type)
+        return dict(data=elems)
+    except Exception as ex:
+        logging.error(f"Error in timeslice_grids endpoint: {ex}")
+        return HTTPResponse(status=500, body=json.dumps({'error': 'Internal server error'}))
 
 
 
