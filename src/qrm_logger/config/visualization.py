@@ -70,3 +70,16 @@ grid_show_title_label = True
 # If False: Full processing including spectrum plot generation
 # Useful for high-frequency monitoring where only CSV data is needed
 skip_image_generation = False
+
+# =============================================================================
+# TIME SLICE (Across Days) SETTINGS
+# =============================================================================
+# Static settings (not user-editable in UI)
+# Limit of most recent days to include in time-slice grids (None = all days)
+timeslice_days_back = 60
+
+# Dynamic settings (stored in config.json); these are defaults used by ConfigManager
+# Hours (0–23) for which time-slice grids are generated after matching recordings
+timeslice_hours_default = [6, 12, 18]
+# Auto-generate time-slice grids after matching hourly recordings
+timeslice_autogenerate_default = False

@@ -30,7 +30,7 @@ from qrm_logger.core.objects import CaptureRun, CaptureSpec, FreqRange
 
 from qrm_logger.config.output_directories import output_directory
 
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 
 
 def create_filename(run: CaptureRun, prefix, file_extension):
@@ -123,8 +123,9 @@ def create_vhf_specs():
 
 def create_uhf_specs():
     return [
-        create_simple_spec( 0, id = "433 MHz", center_khz = 433_000, span_khz = 2_000),
-        create_simple_spec(1, id="439 MHz", center_khz=439_000, span_khz=2_000)
+        create_simple_spec( 0, id = "432 MHz", center_khz = 432_000, span_khz = 2_000),
+        create_simple_spec(1, id="437 MHz", center_khz=437_000, span_khz=2_000),
+        #create_simple_spec(2, id="439 MHz", center_khz=439_000, span_khz=2_000)
     ]
 
 def create_band_specs(band_ids, suffix):

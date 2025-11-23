@@ -268,3 +268,21 @@ def process_grids(capture_set_id, date_string):
         logging.error(f"Error generating grid: {e}")
 
 
+def process_timeslice_grids(capture_set_id, capture_params):
+    # Generate time-slice grids (across days) if enabled and this hour is configured
+    try:
+        from qrm_logger.core.config_manager import get_config_manager
+        cfg = get_config_manager()
+        if cfg.get("timeslice_autogenerate", False):
+            hours = cfg.get("timeslice_hours", []) or []
+            try:
+                anchor_hour = int(capture_params.recording_start_datetime.strftime('%H'))
+            except Exception:
+                anchor_hour = None
+            if anchor_hour is not None and anchor_hour in hours:
+                logging.info("#" * 50)
+                from qrm_logger.imaging.imge_grid_timeslice import generate_time_slice_grid
+                for plot_type in ("waterfall", "average"):
+                    generate_time_slice_grid(capture_set_id, plot_type, anchor_hour)
+    except Exception as e:
+        logging.error(f"Time-slice grid generation failed: {e}")

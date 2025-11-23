@@ -49,6 +49,11 @@
                             ROIs
                         </a>
                     </li>
+                    <li :class="{ 'is-active': $store.config.activeTab === 'timeslices' }">
+                        <a @click="$store.config.setActiveTab('timeslices')">
+                            Time Slices
+                        </a>
+                    </li>
                     <li :class="{ 'is-active': $store.config.activeTab === 'about' }">
                         <a @click="$store.config.setActiveTab('about')">
                             About
@@ -349,6 +354,28 @@
                                 <span x-text="$store.app.status.recording ? 'Recording in Progress...' : 'Start Calibration Recording'"></span>
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Time Slices Tab -->
+                <div x-show="$store.config.activeTab === 'timeslices'" x-cloak>
+                    <h3 class="title is-5" style="margin-bottom: 0.5rem;">Time Slices</h3>
+                    <p class="help" style="margin-bottom: 0.75rem; color: #a5a5a5;">
+                        Generates across‑day grids for the selected hours (per plot type). After a recording for one of these hours completes,
+                        the grid for that hour is rebuilt (at most once per hour). For each day, the first recording in that hour is used.
+                    </p>
+                    <div class="field" style="margin-bottom: 1rem;">
+                        <label class="checkbox">
+                            <input type="checkbox" x-model="$store.config.form.timeslice_autogenerate">
+                            Enable processing
+                        </label>
+                    </div>
+                    <div class="field">
+                        <label class="label">Hours (0–23, comma-separated)</label>
+                        <div class="control">
+                            <input class="input" type="text" x-model="$store.config.form.timeslice_hours_text" placeholder="e.g. 6, 12, 18">
+                        </div>
+                        <p class="help">Specify hours of the day to track. Example: 6, 12, 18 → 06:00, 12:00, 18:00.</p>
                     </div>
                 </div>
 

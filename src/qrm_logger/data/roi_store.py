@@ -304,3 +304,6 @@ def process_rois(capture_set, runs, status: RecordingStatus, capture_params):
         except Exception as e:
             logging.error(f"Error generating ROI grid: {e}")
 
+        from src.qrm_logger.execution.data_exporter import process_timeslice_grids
+        process_timeslice_grids(roi_set_id, capture_params)
+

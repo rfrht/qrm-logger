@@ -35,6 +35,7 @@ from qrm_logger.config.sdr_hardware import device_name, rf_gain, if_gain, sdr_sh
 from qrm_logger.config.capture_definitions import capture_sets
 from qrm_logger.sdr.sdr_rtlsdr import RTLSDR_BANDWIDTH_DEFAULT
 from qrm_logger.sdr.sdr_sdrplay import SDRPLAY_BANDWIDTH_DEFAULT
+from qrm_logger.config.visualization import timeslice_hours_default, timeslice_autogenerate_default
 
 
 class ConfigManager:
@@ -82,6 +83,9 @@ class ConfigManager:
             "sdr_shutdown_after_recording": sdr_shutdown_after_recording,
             # Per-capture-set configurations (e.g., bandwidth overrides)
             "capture_set_configurations": {},
+            # Time-slice (across days) dynamic settings
+            "timeslice_hours": timeslice_hours_default,
+            "timeslice_autogenerate": timeslice_autogenerate_default,
         }
         
         self.load_config()
