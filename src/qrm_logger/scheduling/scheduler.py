@@ -126,9 +126,9 @@ class Scheduler:
                 return None
             next_run = min(jobs, key=lambda j: j.next_run_time).next_run_time
             if next_run:
-                # Convert to local time and format as string for UI
+                # Convert to local time and format as ISO 8601 with timezone for UI
                 local_dt = next_run.astimezone()
-                return local_dt.strftime('%Y-%m-%d %H:%M:%S')
+                return local_dt.isoformat()
             return None
         except Exception as e:
             logging.error(f"Error getting next scheduled time: {e}")

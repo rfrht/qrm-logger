@@ -282,38 +282,50 @@ document.addEventListener('alpine:init', () => {
 
     formatTimeOnly(dateTimeString) {
       if (!dateTimeString) return '';
-      // Extract time from 'YYYY-MM-DD HH:MM:SS' format
-      const parts = dateTimeString.split(' ');
-      if (parts.length >= 2) {
-        const timeParts = parts[1].split(':');
-        if (timeParts.length >= 2) {
-          return `${timeParts[0]}:${timeParts[1]}`; // Return HH:MM format
+      // Parse ISO 8601 format (e.g., '2025-11-25T23:30:00+01:00') or legacy format
+      try {
+        const date = new Date(dateTimeString);
+        if (!isNaN(date)) {
+          const hours = String(date.getHours()).padStart(2, '0');
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+          return `${hours}:${minutes}`;
         }
-        return parts[1]; // Return as-is if time format is unexpected
+      } catch (e) {
+        // Fallback for unexpected formats
       }
-      return dateTimeString; // Return as-is if format is unexpected
+      return dateTimeString;
     },
 
     formatDateOnly(dateTimeString) {
       if (!dateTimeString) return '';
-      const parts = dateTimeString.split(' ');
-      if (parts.length >= 1) {
-        return parts[0]; // YYYY-MM-DD
+      // Parse ISO 8601 format or legacy format
+      try {
+        const date = new Date(dateTimeString);
+        if (!isNaN(date)) {
+          const yyyy = date.getFullYear();
+          const mm = String(date.getMonth() + 1).padStart(2, '0');
+          const dd = String(date.getDate()).padStart(2, '0');
+          return `${yyyy}-${mm}-${dd}`;
+        }
+      } catch (e) {
+        // Fallback for unexpected formats
       }
       return '';
     },
 
     isSameDay(dateTimeString) {
       if (!dateTimeString) return true;
-      const parts = dateTimeString.split(' ');
-      if (parts.length >= 1) {
-        const nextDateStr = parts[0]; // YYYY-MM-DD
+      // Parse ISO 8601 format or legacy format
+      try {
+        const nextDate = new Date(dateTimeString);
         const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        const todayStr = `${yyyy}-${mm}-${dd}`;
-        return nextDateStr === todayStr;
+        if (!isNaN(nextDate)) {
+          return nextDate.getFullYear() === now.getFullYear() &&
+                 nextDate.getMonth() === now.getMonth() &&
+                 nextDate.getDate() === now.getDate();
+        }
+      } catch (e) {
+        // Fallback
       }
       return true;
     },
