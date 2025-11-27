@@ -69,9 +69,11 @@ def main():
     logging.info("Logging configured")
 
     # Load TOML configuration first (before other imports)
-    from qrm_logger.config.toml_config import load_toml_config
+    from qrm_logger.config.toml_config import load_toml_config, load_bands_toml
     load_toml_config()
     logging.info("TOML configuration loaded")
+    load_bands_toml()
+    logging.info("Band definitions loaded")
 
     # Import config modules after TOML is loaded
     from qrm_logger.utils.util import  print_capture_set, check_config, check_capture_sets

@@ -36,12 +36,15 @@ except ModuleNotFoundError:
         )
 
 from .configuration_defaults import DEFAULT_CONFIG_TOML
+from .band_defaults import DEFAULT_BANDS_TOML
 
-# Global config cache
+# Global config caches
 _config = None
+_bands_config = None
 
-# Config file path (relative to project root)
+# Config file paths (relative to project root)
 CONFIG_TOML_PATH = "config.toml"
+BANDS_TOML_PATH = "bands.toml"
 
 
 def _count_keys(d, prefix=""):
@@ -55,6 +58,58 @@ def _count_keys(d, prefix=""):
     return count
 
 
+def _load_toml_file(file_path, default_content, description="configuration"):
+    """
+    Generic TOML file loader with auto-generation.
+    
+    Args:
+        file_path: Path to TOML file
+        default_content: Default TOML content string
+        description: Description for logging
+    
+    Returns:
+        dict: Loaded TOML data
+    """
+    # Check if file exists
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, "rb") as f:
+                data = tomllib.load(f)
+            key_count = _count_keys(data)
+            section_count = len(data)
+            logging.info(f"Loaded {description} from {file_path}: {section_count} sections, {key_count} keys")
+            return data
+        except Exception as e:
+            logging.error(f"Error loading {file_path}: {e}")
+            logging.info(f"Falling back to default {description}")
+            data = tomllib.loads(default_content)
+            key_count = _count_keys(data)
+            logging.info(f"Using default {description}: {len(data)} sections, {key_count} keys")
+            return data
+    
+    # Generate default file
+    logging.info(f"{file_path} not found, creating with defaults")
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(default_content)
+        logging.info(f"Created default {file_path}")
+        
+        # Load the newly created file
+        with open(file_path, "rb") as f:
+            data = tomllib.load(f)
+        key_count = _count_keys(data)
+        section_count = len(data)
+        logging.info(f"Loaded {description}: {section_count} sections, {key_count} keys")
+        return data
+    except Exception as e:
+        logging.error(f"Error creating {file_path}: {e}")
+        logging.info(f"Using in-memory default {description}")
+        data = tomllib.loads(default_content)
+        key_count = _count_keys(data)
+        logging.info(f"Using default {description}: {len(data)} sections, {key_count} keys")
+        return data
+
+
 def load_toml_config():
     """
     Load config.toml or generate from defaults.
@@ -63,59 +118,22 @@ def load_toml_config():
         dict: Loaded TOML configuration
     """
     global _config
-    
-    if _config is not None:
-        return _config
-    
-    # Check if config.toml exists
-    if os.path.exists(CONFIG_TOML_PATH):
-        try:
-            with open(CONFIG_TOML_PATH, "rb") as f:
-                _config = tomllib.load(f)
-            key_count = _count_keys(_config)
-            section_count = len(_config)
-            logging.info(f"Loaded configuration from {CONFIG_TOML_PATH}: {section_count} sections, {key_count} keys")
-            return _config
-        except Exception as e:
-            logging.error(f"Error loading {CONFIG_TOML_PATH}: {e}")
-            logging.info("Falling back to default configuration")
-            _config = _parse_default_config()
-            key_count = _count_keys(_config)
-            logging.info(f"Using default configuration: {len(_config)} sections, {key_count} keys")
-            return _config
-    
-    # Generate default config.toml
-    logging.info(f"{CONFIG_TOML_PATH} not found, creating with defaults")
-    try:
-        with open(CONFIG_TOML_PATH, "w", encoding="utf-8") as f:
-            f.write(DEFAULT_CONFIG_TOML)
-        logging.info(f"Created default {CONFIG_TOML_PATH}")
-        
-        # Load the newly created file
-        with open(CONFIG_TOML_PATH, "rb") as f:
-            _config = tomllib.load(f)
-        key_count = _count_keys(_config)
-        section_count = len(_config)
-        logging.info(f"Loaded configuration: {section_count} sections, {key_count} keys")
-        return _config
-    except Exception as e:
-        logging.error(f"Error creating {CONFIG_TOML_PATH}: {e}")
-        logging.info("Using in-memory default configuration")
-        _config = _parse_default_config()
-        key_count = _count_keys(_config)
-        logging.info(f"Using default configuration: {len(_config)} sections, {key_count} keys")
-        return _config
+    if _config is None:
+        _config = _load_toml_file(CONFIG_TOML_PATH, DEFAULT_CONFIG_TOML, "configuration")
+    return _config
 
 
-def _parse_default_config():
+def load_bands_toml():
     """
-    Parse default configuration from template string.
-    Used as fallback when config.toml cannot be loaded or created.
+    Load bands.toml or generate from defaults.
     
     Returns:
-        dict: Parsed default configuration
+        dict: Loaded band definitions
     """
-    return tomllib.loads(DEFAULT_CONFIG_TOML)
+    global _bands_config
+    if _bands_config is None:
+        _bands_config = _load_toml_file(BANDS_TOML_PATH, DEFAULT_BANDS_TOML, "band definitions")
+    return _bands_config
 
 
 class _LazyTomlConfig:
