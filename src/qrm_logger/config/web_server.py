@@ -20,6 +20,8 @@ Web server configuration settings for QRM Logger.
 Contains network binding and server parameter settings for the web interface.
 """
 
+from .toml_config import _toml
+
 # =============================================================================
 # WEB SERVER CONFIGURATION
 # =============================================================================
@@ -33,13 +35,11 @@ Contains network binding and server parameter settings for the web interface.
 #   web_server_host = 'localhost'     # Local access only (secure)
 #   web_server_host = '0.0.0.0'       # Network access (SECURITY RISK on untrusted networks)
 #   web_server_host = '192.168.1.100' # Specific IP address
-web_server_host = 'localhost'
-#web_server_host = '0.0.0.0'
-web_server_port = 7060
+web_server_host = _toml["web"]["host"]
+web_server_port = _toml["web"]["port"]
 
 # Static file cache control (seconds)
 # Sets Cache-Control: public, max-age=<value> for Bottle static_file responses.
 # Set to 0 to disable caching (no-store).
-#static_cache_max_age_sec = 3600
-static_cache_max_age_sec = 0
+static_cache_max_age_sec = _toml["web"]["static_cache_max_age_sec"]
 

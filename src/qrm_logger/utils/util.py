@@ -222,11 +222,6 @@ def print_capture_set(capture_set):
         logging.info(", ".join(parts))
 
 
-
-def setup_logging():
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-
 # Performance tracking
 performance_times = []
 

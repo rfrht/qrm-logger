@@ -20,6 +20,8 @@ Analysis configuration settings for QRM Logger.
 Contains frequency exclusion and signal analysis parameters.
 """
 
+from .toml_config import _toml
+
 # =============================================================================
 # ANALYSIS CONFIGURATION
 # =============================================================================
@@ -27,5 +29,5 @@ Contains frequency exclusion and signal analysis parameters.
 # Frequencies to exclude from RMS analysis (kHz)
 #  - 0 kHz targets baseband/DC artifacts
 #  - 28800 kHz is the RTL-SDR Blog V4 upconverter LO frequency
-exclude_freqs_khz = [0.0, 28800.0]
+exclude_freqs_khz = _toml["analysis"]["exclude_freqs_khz"]
 

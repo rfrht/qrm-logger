@@ -20,66 +20,64 @@ Plot and visualization configuration settings for QRM Logger.
 Contains image generation, grid layout, plot appearance, and processing control settings.
 """
 
+from .toml_config import _toml
+
 # =============================================================================
 # PLOT/VISUALIZATION CONFIGURATION
 # =============================================================================
 
 # Enable drawing of amateur radio band markers on spectrum plots
-draw_bandplan = True
+draw_bandplan = _toml["visualization"]["draw_bandplan"]
 
 # Enable drawing of MHz frequency separators on spectrum plots
-draw_mhz_separators = True
-
+draw_mhz_separators = _toml["visualization"]["draw_mhz_separators"]
 
 # Image compression settings
 # PNG compression level (0-9): 0=no compression, 9=maximum compression
 # Higher values = smaller files but slower saving
-png_compression_level = 6  # Good balance of size and speed
+png_compression_level = _toml["visualization"]["png_compression_level"]
 
 # Grid row sorting order (True = latest first, False = oldest first)
-grid_sort_latest_first = True
+grid_sort_latest_first = _toml["visualization"]["grid"]["sort_latest_first"]
 
 # FFT decimation for waterfall plots
 # decimation_method: Algorithm used when combining adjacent frequency bins
 # "mean" - Takes average of decimated bins (smoothest appearance, good for noise floor)
 # "max" - Takes maximum of decimated bins (preserves narrow band signals and peaks)
 # "sample" - Simple sampling (fastest, may miss signals)
-decimation_method = "mean"
-
+decimation_method = _toml["visualization"]["decimation_method"]
 
 # Split daily grids into multiple images by fixed hour windows
 # Example: grid_time_window_hours = 6  -> 00-06, 06-12, 12-18, 18-24
 # Example: grid_time_window_hours = 12 -> 00-12, 12-24
 # Note: Changing this setting during a day will produce mixed windows for that date (old and new labels).
 #       To avoid confusion, change it at the start of a new day.
-grid_time_window_hours = 12
+grid_time_window_hours = _toml["visualization"]["grid"]["time_window_hours"]
 
 # Maximum number of recordings to include in grid (0 = unlimited)
 # Useful short interval monitoring sessions - shows only most recent N recordings
-grid_max_rows = 0  # 0 = show all recordings, >0 = limit to N most recent
+grid_max_rows = _toml["visualization"]["grid"]["max_rows"]
 
 # Show grid title label (date) in top-left tile
 # If True: Date label appears in top-left corner of the grid
 # If False: No title label, grid starts directly with frequency labels
-grid_show_title_label = True
-
-
+grid_show_title_label = _toml["visualization"]["grid"]["show_title_label"]
 
 # Skip image generation for faster processing (data-only mode)
 # If True: Only RMS analysis is performed, no spectrum plots are generated
 # If False: Full processing including spectrum plot generation
 # Useful for high-frequency monitoring where only CSV data is needed
-skip_image_generation = False
+skip_image_generation = _toml["visualization"]["skip_image_generation"]
 
 # =============================================================================
 # TIME SLICE (Across Days) SETTINGS
 # =============================================================================
 # Static settings (not user-editable in UI)
 # Limit of most recent days to include in time-slice grids (None = all days)
-timeslice_days_back = 60
+timeslice_days_back = _toml["visualization"]["timeslice"]["days_back"]
 
 # Dynamic settings (stored in config.json); these are defaults used by ConfigManager
 # Hours (0–23) for which time-slice grids are generated after matching recordings
-timeslice_hours_default = [6, 12, 18]
+timeslice_hours_default = _toml["visualization"]["timeslice"]["hours_default"]
 # Auto-generate time-slice grids after matching hourly recordings
-timeslice_autogenerate_default = False
+timeslice_autogenerate_default = _toml["visualization"]["timeslice"]["autogenerate_default"]

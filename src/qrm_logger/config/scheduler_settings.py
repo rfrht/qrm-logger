@@ -20,6 +20,8 @@ Scheduler configuration settings for QRM Logger.
 Contains automated recording schedule parameters and timing settings.
 """
 
+from .toml_config import _toml
+
 # =============================================================================
 # SCHEDULER CONFIGURATION
 # =============================================================================
@@ -28,7 +30,7 @@ Contains automated recording schedule parameters and timing settings.
 # If True: scheduler starts immediately when main.py runs
 # If False: scheduler must be started manually via web interface
 # dynamic property, managed by config.json
-scheduler_autostart = False
+scheduler_autostart = _toml["scheduler"]["autostart"]
 
 # Cron expression in standard crontab format
 # Tip: Prefer day-of-week names (mon-sun) instead of numbers to avoid ambiguity with APScheduler's DOW mapping (0=Mon..6=Sun).
@@ -38,4 +40,4 @@ scheduler_autostart = False
 #   "*/5 18-21 * * *"           -> every 5 minutes from 18:00 to 21:59
 #   "*/10 6-8,17-20 * * mon-fri" -> every 10 minutes during commute hours on weekdays
 # dynamic property, managed by config.json
-scheduler_cron = "*/15 * * * *"
+scheduler_cron = _toml["scheduler"]["cron"]

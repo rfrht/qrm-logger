@@ -2,6 +2,7 @@
 # Generated output files
 _recordings/****
 
+config.toml
 config.json
 capture_sets.json
 #roi-config.json

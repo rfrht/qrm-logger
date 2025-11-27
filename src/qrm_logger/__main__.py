@@ -27,13 +27,6 @@ import json
 
 from gnuradio import gr
 
-from qrm_logger.config.capture_definitions import init_capture_sets
-from qrm_logger.core.config_manager import get_config_manager
-from qrm_logger.scheduling.scheduler import get_scheduler
-from qrm_logger.recorder.recorder import get_recorder
-from qrm_logger.utils.util import setup_logging, print_capture_set, check_config, check_capture_sets
-from qrm_logger.web.web_routes import run_bottle
-
 
 def enable_realtime():
     if gr.enable_realtime_scheduling() != gr.RT_OK or 0:
@@ -42,6 +35,8 @@ def enable_realtime():
 
 def run_once():
     """Execute a single recording and exit"""
+    from qrm_logger.recorder.recorder import get_recorder
+    
     enable_realtime()
 
 
@@ -69,7 +64,22 @@ def run_once():
 
 
 def main():
-    setup_logging()
+
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+    logging.info("Logging configured")
+
+    # Load TOML configuration first (before other imports)
+    from qrm_logger.config.toml_config import load_toml_config
+    load_toml_config()
+    logging.info("TOML configuration loaded")
+
+    # Import config modules after TOML is loaded
+    from qrm_logger.utils.util import  print_capture_set, check_config, check_capture_sets
+
+    from qrm_logger.config.capture_definitions import init_capture_sets, capture_sets
+    from qrm_logger.core.config_manager import get_config_manager
+    from qrm_logger.scheduling.scheduler import get_scheduler
+    from qrm_logger.web.web_routes import run_bottle
 
     init_capture_sets()
     
@@ -92,7 +102,6 @@ def main():
     check_config()
 
     # Print capture set configuration to console
-    from qrm_logger.config.capture_definitions import capture_sets
     logging.info("=== Capture Set Configurations ===")
     for s in capture_sets:
         print_capture_set(s)

@@ -30,7 +30,7 @@ from PIL import Image, ImageDraw
 from qrm_logger.config.visualization import png_compression_level, grid_sort_latest_first, grid_max_rows, grid_time_window_hours, grid_show_title_label
 from qrm_logger.config.output_directories import output_directory, subdirectory_grids_full, subdirectory_grids_resized, subdirectory_plots_resized
 from qrm_logger.data.metadata import load_plot_metadata
-from qrm_logger.utils.util import setup_logging, create_dirname, create_dirname_flat, create_dirname_meta
+from qrm_logger.utils.util import  create_dirname, create_dirname_flat, create_dirname_meta
 
 # Column layout threshold for sparse vs dense grid optimization
 SPARSE_COLUMN_THRESHOLD = 5
@@ -487,7 +487,7 @@ def get_grids(capture_set_id, plot_type):
 
 
 if __name__ == '__main__':
-    setup_logging()
+    #setup_logging()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-id", "--capture-set-id", type=str, required=True)
