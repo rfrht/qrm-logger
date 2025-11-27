@@ -27,7 +27,7 @@ import time
 
 from bottle import static_file, route, request, HTTPResponse, run
 
-from qrm_logger.config.capture_definitions import capture_sets
+from qrm_logger.config.capture_definitions import capture_sets, get_capture_set_ids
 from qrm_logger.core.config_manager import get_config_manager
 from qrm_logger.utils.counter import get_counter
 from qrm_logger.core.objects import CaptureParams
@@ -271,8 +271,8 @@ def sdr_control():
 def capture_sets_endpoint():
     """Get list of available capture set IDs (includes ROI sets with _ROI suffix when enabled)."""
     try:
-        # Base sets from static configuration
-        base_ids = [s.id for s in capture_sets]
+        # Base sets from configuration (dynamically loaded)
+        base_ids = get_capture_set_ids()
 
         # Dynamic ROI sets only when processing is enabled
         try:
@@ -295,23 +295,27 @@ def capture_sets_endpoint():
 def capture_sets_with_specs_endpoint():
     """Get all capture sets with their full spec details.
     Returns: { 
-        "capture_set_id": [
-            {
-                "spec_index": 0,
-                "id": "spec_id",
-                "freq": 7000.0,
-                "span": 1000.0 or null,
-                "freq_range": {"freq_start": 6500, "freq_end": 7500, "margin": 50} or null
-            },
-            ...
-        ],
+        "capture_set_id": {
+            "description": "Set description" or null,
+            "specs": [
+                {
+                    "spec_index": 0,
+                    "id": "spec_id",
+                    "freq": 7000.0,
+                    "span": 1000.0 or null,
+                    "freq_range": {"freq_start": 6500, "freq_end": 7500, "margin": 50} or null
+                },
+                ...
+            ]
+        },
         ...
     }
     """
     try:
         result = {}
-        # Add base capture sets
-        for cs in capture_sets:
+        # Add base capture sets (import dynamically to get current state)
+        from qrm_logger.config.capture_definitions import capture_sets as current_capture_sets
+        for cs in current_capture_sets:
             specs_data = []
             for spec in cs.specs:
                 spec_dict = {
@@ -330,7 +334,12 @@ def capture_sets_with_specs_endpoint():
                 else:
                     spec_dict['freq_range'] = None
                 specs_data.append(spec_dict)
-            result[cs.id] = specs_data
+            
+            # Store as object with description and specs
+            result[cs.id] = {
+                'description': cs.description,
+                'specs': specs_data
+            }
         
         # Add ROI sets from roi_store
         from qrm_logger.data.roi_store import get_roi_specs

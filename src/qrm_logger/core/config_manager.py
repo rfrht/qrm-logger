@@ -32,7 +32,7 @@ DEFAULT_CONFIG_PATH = "config.json"
 from qrm_logger.config.scheduler_settings import scheduler_cron, scheduler_autostart
 from qrm_logger.config.recording_params import rec_time_default_sec, fft_size_default, min_db, max_db
 from qrm_logger.config.sdr_hardware import device_name, rf_gain, if_gain, sdr_shutdown_after_recording
-from qrm_logger.config.capture_definitions import capture_sets
+from qrm_logger.config.capture_definitions import init_capture_sets, get_capture_set_ids
 from qrm_logger.sdr.sdr_rtlsdr import RTLSDR_BANDWIDTH_DEFAULT
 from qrm_logger.sdr.sdr_sdrplay import SDRPLAY_BANDWIDTH_DEFAULT
 from qrm_logger.config.visualization import timeslice_hours_default, timeslice_autogenerate_default
@@ -60,8 +60,9 @@ class ConfigManager:
         self.config_file_path = config_file_path
         self.config_data = {}
 
-        # List all capture set IDs (for validation/logging)
-        capture_set_ids = [s.id for s in capture_sets]
+        # Initialize capture sets and list IDs (for validation/logging)
+        init_capture_sets()
+        capture_set_ids = get_capture_set_ids()
         logging.info("capture_set_ids "+ str(capture_set_ids))
 
         # Get default bandwidth based on device_name from sdr_hardware
@@ -109,9 +110,9 @@ class ConfigManager:
                 
                 # Sync capture_sets_enabled with current capture sets and ensure only valid IDs
                 try:
-                    valid_set_ids_list = [s.id for s in capture_sets]
+                    valid_set_ids_list = get_capture_set_ids()
                 except Exception:
-                    # Fallback to defaults computed at init if capture_sets is unavailable for any reason
+                    # Fallback to defaults computed at init if capture sets are unavailable for any reason
                     valid_set_ids_list = list(self.default_config.get('capture_sets_enabled', []))
                 valid_set_ids_set = set(valid_set_ids_list)
 

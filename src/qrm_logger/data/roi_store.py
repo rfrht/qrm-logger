@@ -81,16 +81,19 @@ def load_roi_config() -> Dict[str, Any]:
         return { "processing_enabled": False, "rois": [] }
 
 
-def get_roi_specs() -> Dict[str, List[Dict[str, Any]]]:
+def get_roi_specs() -> Dict[str, Dict[str, Any]]:
     """Get ROI specs grouped by ROI set ID (base_capture_set_id + '_ROI').
     
     Returns:
-        Dictionary mapping ROI set IDs to lists of spec dictionaries.
+        Dictionary mapping ROI set IDs to objects with description and specs.
         Example: {
-            "BANDS_ROI": [
-                {"id": "7M-ROI", "freq": 7100, "span": 100, "freq_range": {...}},
-                ...
-            ]
+            "BANDS_ROI": {
+                "description": "Custom ROI configuration",
+                "specs": [
+                    {"id": "7M-ROI", "freq": 7100, "span": 100, "freq_range": {...}},
+                    ...
+                ]
+            }
         }
     """
     result = {}
@@ -142,7 +145,10 @@ def get_roi_specs() -> Dict[str, List[Dict[str, Any]]]:
                     continue
             
             if roi_specs:
-                result[roi_set_id] = roi_specs
+                result[roi_set_id] = {
+                    'description': f"Custom ROI configuration based on {base_id}",
+                    'specs': roi_specs
+                }
     except Exception as e:
         logging.error(f"Error getting ROI specs: {e}")
     

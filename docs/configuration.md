@@ -72,34 +72,79 @@ Capture sets define the frequency ranges that qrm-logger will monitor. They are 
 
 
 
-#### Creating Custom Capture Sets
+#### Creating or Editing Capture Sets (JSON)
 
-To add a new capture set:
+All capture sets are defined in a single JSON file at the project root: `capture_sets.json`.
 
-1. **Edit `config/capture_definitions.py`**:
-   ```python
-   # Add your capture set in the init_capture_sets() function
-   set_my_custom = CaptureSet(
-       id = "my_custom",
-       specs = create_step_specs(
-           start_mhz = 144,
-           end_mhz = 148,
-           step_mhz = 1,
-           suffix = " MHz",
-           crop_to_step = True,
-           crop_margin_khz = 5
-       )
-   )
-   
-   # Don't forget to append it to the capture_sets list
-   capture_sets.append(set_my_custom)
-   ```
+- The file is created automatically on first run with sensible defaults.
+- It is git-ignored so upgrades do not overwrite your changes.
 
-2. **Delete `config.json`** to force regeneration with new capture set
+Two ways to define sets:
+- Declarative types (mapped to existing builder functions)
+- Raw specs (full control for complex cases)
 
-3. **Restart the application**
+Example (declarative):
+```json
+{
+  "version": 1,
+  "capture_sets": [
+    {
+      "id": "HF_bands",
+      "description": "Amateur radio HF bands (80m, 40m, 30m, 20m, 17m, 15m, 10m)",
+      "type": "band_specs",
+      "params": {
+        "band_ids": ["80", "40", "30", "20", "17", "15", "10"],
+        "suffix": "m"
+      }
+    },
+    {
+      "id": "HF_full",
+      "description": "Complete HF coverage 0-30 MHz in 2 MHz steps (best with 2.4 MHz bandwidth)",
+      "type": "step_specs",
+      "params": {
+        "start_mhz": 1,
+        "end_mhz": 29,
+        "step_mhz": 2,
+        "suffix": " MHz",
+        "crop_to_step": true,
+        "crop_margin_khz": 5
+      }
+    }
+  ]
+}
+```
 
-4. **Select your new capture set** in the web interface
+Example (raw specs):
+```json
+{
+  "version": 1,
+  "capture_sets": [
+    {
+      "id": "custom_complex",
+      "description": "Custom frequency configuration with manual specs",
+      "type": "raw_specs",
+      "specs": [
+        {
+          "spec_index": 0,
+          "id": "145 MHz",
+          "freq": 145000,
+          "freq_range": {
+            "id": "145 MHz",
+            "freq_start": 144000,
+            "freq_end": 146000,
+            "crop_margin_khz": 10
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+Steps:
+1. Edit `capture_sets.json`
+2. Restart the application
+3. Select your set in the web interface
 
 #### Capture Set Parameters
 

@@ -143,7 +143,9 @@ document.addEventListener('alpine:init', () => {
     updateAvailableCaptureSpecs(captureSetId, preserveSpecId = false) {
       // Update available specs when capture set changes
       if (captureSetId && this.captureSetsWithSpecs[captureSetId]) {
-        this.availableCaptureSpecs = this.captureSetsWithSpecs[captureSetId]
+        const setData = this.captureSetsWithSpecs[captureSetId]
+        // Extract specs array from new format {description, specs}
+        this.availableCaptureSpecs = setData.specs || []
       } else {
         this.availableCaptureSpecs = []
       }
@@ -675,7 +677,10 @@ document.addEventListener('alpine:init', () => {
         return null
       }
       
-      const specs = this.captureSetsWithSpecs[this.captureSetInfoId]
+      const setData = this.captureSetsWithSpecs[this.captureSetInfoId]
+      const specs = setData.specs || []
+      const description = setData.description
+      
       if (!specs || specs.length === 0) {
         return null
       }
@@ -689,6 +694,7 @@ document.addEventListener('alpine:init', () => {
       
       return {
         captureSetId: this.captureSetInfoId,
+        description: description,
         specs: sortedSpecs.map((spec) => ({
           index: spec.spec_index + 1,
           id: spec.id,

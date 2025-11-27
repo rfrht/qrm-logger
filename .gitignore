@@ -3,11 +3,14 @@
 _recordings/****
 
 config.json
+capture_sets.json
 #roi-config.json
 
 # Distribution files
 dist_qrm-logger.zip
 temp_dist/
+create_distribution.bat
+exclude_list.txt
 
 # Python
 __pycache__/
@@ -16,3 +19,6 @@ __pycache__/
 .vscode/
 .idea/
 
+warp.md
+
+drafts/*

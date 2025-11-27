@@ -195,6 +195,8 @@ def print_capture_set(capture_set):
         return
     
     logging.info(f"Set ID: {capture_set.id}")
+    if capture_set.description:
+        logging.info(f"  Description: {capture_set.description}")
     
     for i, spec in enumerate(capture_set.specs):
         # Build the spec line: ID in quotes, freq range (without margin), center freq, span, margin
