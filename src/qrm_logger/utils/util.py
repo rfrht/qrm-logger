@@ -128,12 +128,13 @@ def create_uhf_specs():
         #create_simple_spec(2, id="439 MHz", center_khz=439_000, span_khz=2_000)
     ]
 
-def create_band_specs(band_ids, suffix):
+def create_band_specs(band_ids, suffix=""):
     """
     Create CaptureSpecs based on amateur radio band markers.
     
     Args:
-        band_ids: List of band ID strings to create specs for (e.g., ["80", "40", "20", "15", "10"])
+        band_ids: List of band ID strings to create specs for (e.g., ["80m", "40m", "20m", "15m", "10m"])
+        suffix: Optional suffix to append to band ID (deprecated, IDs should include suffix)
     
     Returns:
         List of CaptureSpec objects with center frequency set to band start frequency (in kHz),
@@ -162,8 +163,8 @@ def create_band_specs(band_ids, suffix):
         # Use band start frequency as center frequency (kHz)
         center_freq_khz = band.start
         
-        # Create spec name using band ID
-        spec_name = f"{band_id+suffix}"
+        # Create spec name using band ID (optionally append suffix)
+        spec_name = f"{band_id}{suffix}" if suffix else band_id
         
         # Create FreqRange for spectrum cropping
         freq_range = FreqRange(

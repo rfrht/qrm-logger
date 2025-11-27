@@ -27,20 +27,20 @@ from qrm_logger.core.objects import Band
 
 band_markers = [
     # IARU Region 1 HF
-    Band("160", 1810, 2000),   # 160 meter band
-    Band("80", 3500, 3800),    # 80 meter band
+    Band("160m", 1810, 2000),   # 160 meter band
+    Band("80m", 3500, 3800),    # 80 meter band
     # Region 2 variant (uncomment to use):
-    # Band("80", 3500, 4000),    # 80/75 meter band (Region 2)
-    Band("60", 5351, 5367),    # 60 meter band
-    Band("40", 7000, 7200),    # 40 meter band
+    # Band("80m", 3500, 4000),    # 80/75 meter band (Region 2)
+    Band("60m", 5351, 5367),    # 60 meter band
+    Band("40m", 7000, 7200),    # 40 meter band
     # Region 2 variant (uncomment to use):
-    # Band("40", 7000, 7300),    # 40 meter band (Region 2)
-    Band("30", 10100, 10150),  # 30 meter band
-    Band("20", 14000, 14350),  # 20 meter band
-    Band("17", 18068, 18168),  # 17 meter band
-    Band("15", 21000, 21450),  # 15 meter band
-    Band("12", 24890, 24990),  # 12 meter band
-    Band("10", 28000, 29700),  # 10 meter band
+    # Band("40m", 7000, 7300),    # 40 meter band (Region 2)
+    Band("30m", 10100, 10150),  # 30 meter band
+    Band("20m", 14000, 14350),  # 20 meter band
+    Band("17m", 18068, 18168),  # 17 meter band
+    Band("15m", 21000, 21450),  # 15 meter band
+    Band("12m", 24890, 24990),  # 12 meter band
+    Band("10m", 28000, 29700),  # 10 meter band
     # IARU Region 1 VHF/UHF service markers (kHz)
     # 2m satellite downlink (space-to-Earth)
     Band("VHF-SAT-DL", 145800, 146000),
