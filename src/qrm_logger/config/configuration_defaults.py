@@ -131,11 +131,6 @@ bias_t_enabled = false
 #   Warning: When this is off, do not unplug the SDR/USB while active; the application cannot reconnect
 shutdown_after_recording = true
 
-[sdr.device_names]
-# Device name constants (do not change unless adding new SDR support)
-rtlsdr = "rtlsdr"
-sdrplay = "sdrplay"
-
 # =============================================================================
 # VISUALIZATION CONFIGURATION
 # =============================================================================

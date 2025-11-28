@@ -26,8 +26,9 @@ from .toml_config import _toml
 # SDR DEVICE NAME CONSTANTS
 # =============================================================================
 
-DEVICE_NAME_RTLSDR = _toml["sdr"]["device_names"]["rtlsdr"]
-DEVICE_NAME_SDRPLAY = _toml["sdr"]["device_names"]["sdrplay"]
+# These are static constants, not user-configurable
+DEVICE_NAME_RTLSDR = "rtlsdr"
+DEVICE_NAME_SDRPLAY = "sdrplay"
 
 # =============================================================================
 # SDR HARDWARE CONFIGURATION
