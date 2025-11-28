@@ -45,10 +45,24 @@ _REQUIRED_KEYS = {
 }
 
 
+def generate_default_roi_config():
+    """Generate default roi-config.json from template if it doesn't exist."""
+    if os.path.exists(ROI_FILE_PATH):
+        return
+    
+    from qrm_logger.config.roi_defaults import DEFAULT_ROI_JSON
+    try:
+        with open(ROI_FILE_PATH, "w", encoding="utf-8") as f:
+            f.write(DEFAULT_ROI_JSON)
+        logging.info(f"Generated default {ROI_FILE_PATH}")
+    except Exception as e:
+        logging.error(f"Failed to generate default ROI config: {e}")
+
+
 def load_roi_config() -> Dict[str, Any]:
     """Load ROI configuration from JSON.
     Returns { processing_enabled: bool, rois: list }.
-    If file is missing or invalid, returns defaults { False, [] }.
+    If file is missing, returns defaults { False, [] }.
     """
     try:
         if not os.path.exists(ROI_FILE_PATH):

@@ -6,7 +6,7 @@ bands.toml
 config.toml
 config.json
 capture_sets.json
-#roi-config.json
+roi-config.json
 
 # Distribution files
 dist_qrm-logger.zip

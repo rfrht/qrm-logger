@@ -90,6 +90,10 @@ def main():
         logging.error("Capture set validation failed. Please fix the configuration errors and restart.")
         import sys
         sys.exit(1)
+    
+    # Generate ROI config if missing (after capture sets are validated)
+    from qrm_logger.data.roi_store import generate_default_roi_config
+    generate_default_roi_config()
 
     # Initialize configuration from JSON file
     logging.info("Initializing configuration...")
