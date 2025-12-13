@@ -2,11 +2,15 @@
 # Generated output files
 _recordings/****
 
+# Config files
 config-bandplan.toml
 config-static.toml
 config-dynamic.json
 config-capture_sets.json
 config-roi.json
+
+# Service startup script
+qrm-logger.sh
 
 # Distribution files
 dist_qrm-logger.zip
