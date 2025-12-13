@@ -33,7 +33,7 @@ from qrm_logger.execution.data_exporter import process_spectrum_data, process_gr
 from qrm_logger.data.rms import write_rms
 
 # JSON file path for ROI configuration (app root)
-ROI_FILE_PATH = "roi-config.json"
+ROI_FILE_PATH = "config-roi.json"
 
 # Required fields for every ROI definition
 _REQUIRED_KEYS = {
@@ -45,10 +45,24 @@ _REQUIRED_KEYS = {
 }
 
 
+def generate_default_roi_config():
+    """Generate default config-roi.json from template if it doesn't exist."""
+    if os.path.exists(ROI_FILE_PATH):
+        return
+    
+    from qrm_logger.config.roi_defaults import DEFAULT_ROI_JSON
+    try:
+        with open(ROI_FILE_PATH, "w", encoding="utf-8") as f:
+            f.write(DEFAULT_ROI_JSON)
+        logging.info(f"Generated default {ROI_FILE_PATH}")
+    except Exception as e:
+        logging.error(f"Failed to generate default ROI config: {e}")
+
+
 def load_roi_config() -> Dict[str, Any]:
     """Load ROI configuration from JSON.
     Returns { processing_enabled: bool, rois: list }.
-    If file is missing or invalid, returns defaults { False, [] }.
+    If file is missing, returns defaults { False, [] }.
     """
     try:
         if not os.path.exists(ROI_FILE_PATH):
@@ -81,16 +95,19 @@ def load_roi_config() -> Dict[str, Any]:
         return { "processing_enabled": False, "rois": [] }
 
 
-def get_roi_specs() -> Dict[str, List[Dict[str, Any]]]:
+def get_roi_specs() -> Dict[str, Dict[str, Any]]:
     """Get ROI specs grouped by ROI set ID (base_capture_set_id + '_ROI').
     
     Returns:
-        Dictionary mapping ROI set IDs to lists of spec dictionaries.
+        Dictionary mapping ROI set IDs to objects with description and specs.
         Example: {
-            "BANDS_ROI": [
-                {"id": "7M-ROI", "freq": 7100, "span": 100, "freq_range": {...}},
-                ...
-            ]
+            "BANDS_ROI": {
+                "description": "Custom ROI configuration",
+                "specs": [
+                    {"id": "7M-ROI", "freq": 7100, "span": 100, "freq_range": {...}},
+                    ...
+                ]
+            }
         }
     """
     result = {}
@@ -142,7 +159,10 @@ def get_roi_specs() -> Dict[str, List[Dict[str, Any]]]:
                     continue
             
             if roi_specs:
-                result[roi_set_id] = roi_specs
+                result[roi_set_id] = {
+                    'description': f"Custom ROI configuration based on {base_id}",
+                    'specs': roi_specs
+                }
     except Exception as e:
         logging.error(f"Error getting ROI specs: {e}")
     

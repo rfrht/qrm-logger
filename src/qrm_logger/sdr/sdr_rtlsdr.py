@@ -20,7 +20,7 @@ from qrm_logger.config.sdr_hardware import bias_t_enabled
 
 # RTL-SDR bandwidth options in kHz
 RTLSDR_BANDWIDTH_OPTIONS = [250, 1024, 1536, 2048, 2400, 2561, 3200, 4096]
-# default for dynamic property 'sdr_bandwidth', managed by config.json
+# default for dynamic property 'sdr_bandwidth', managed by config-dynamic.json
 RTLSDR_BANDWIDTH_DEFAULT = 2400
 
 # RTL-SDR gain range

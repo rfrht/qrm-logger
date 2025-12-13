@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "capture_sets": [
+    {
+      "id": "HF_bands",
+      "description": "Amateur radio HF bands (80m, 40m, 30m, 20m, 17m, 15m, 10m)",
+      "type": "band_specs",
+      "params": {
+        "band_ids": ["80m", "40m", "30m", "20m", "17m", "15m", "10m"]
+      }
+    },
+    {
+      "id": "HF_full",
+      "description": "Complete HF coverage 0-30 MHz in 2 MHz steps (best with 2.4 MHz bandwidth)",
+      "type": "step_specs",
+      "params": {
+        "start_mhz": 1,
+        "end_mhz": 29,
+        "step_mhz": 2,
+        "suffix": " MHz",
+        "crop_to_step": true,
+        "crop_margin_khz": 5
+      }
+    },
+    {
+      "id": "HF_full_wide",
+      "description": "Wideband HF coverage 3-30 MHz in 5 MHz steps (best with 6 MHz bandwidth)",
+      "type": "step_specs",
+      "params": {
+        "start_mhz": 3,
+        "end_mhz": 30,
+        "step_mhz": 5,
+        "suffix": " MHz",
+        "crop_to_step": true,
+        "crop_margin_khz": 5
+      }
+    },
+    {
+      "id": "VHF_band",
+      "description": "2m amateur band (144-146 MHz)",
+      "type": "vhf_specs",
+      "params": {}
+    },
+    {
+      "id": "UHF_full",
+      "description": "70cm amateur band coverage 430-440 MHz in 2 MHz steps",
+      "type": "step_specs",
+      "params": {
+        "start_mhz": 431,
+        "end_mhz": 439,
+        "step_mhz": 2,
+        "suffix": " MHz",
+        "crop_to_step": true,
+        "crop_margin_khz": 5
+      }
+    },
+    {
+      "id": "custom_frequencies",
+      "description": "Specific center frequencies (11, 13, 15 MHz)",
+      "type": "raw_specs",
+      "specs": [
+        {
+          "spec_index": 0,
+          "id": "11 MHz",
+          "freq": 11000
+        },
+        {
+          "spec_index": 1,
+          "id": "13 MHz",
+          "freq": 13000
+        },
+        {
+          "spec_index": 2,
+          "id": "15 MHz",
+          "freq": 15000
+        },
+        {
+          "spec_index": 3,
+          "id": "20m Band",
+          "freq": 14175,
+          "freq_range": {
+            "id": "20m",
+            "freq_start": 14000,
+            "freq_end": 14350,
+            "crop_margin_khz": 10
+          }
+        }
+      ]
+    }
+  ]
+}

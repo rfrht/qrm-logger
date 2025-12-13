@@ -20,18 +20,19 @@ Output directory and file path configuration for QRM Logger.
 Contains base directory settings and subdirectory structure definitions.
 """
 
+from .toml_config import _toml
+
 # =============================================================================
 # OUTPUT DIRECTORY CONFIGURATION
 # =============================================================================
 
 # Base output directory for all generated files
-output_directory="./_recordings"
-
+output_directory = _toml["paths"]["output_directory"]
 
 # Keep raw files after plot generation
 # If False: raw files are deleted after plots are created (saves disk space)
 # If True: raw files are preserved for later analysis or debugging
-keep_raw_files = False
+keep_raw_files = _toml["paths"]["keep_raw_files"]
 
 
 # =============================================================================

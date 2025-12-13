@@ -2,12 +2,24 @@
 # Generated output files
 _recordings/****
 
-config.json
-#roi-config.json
+# Config files
+config-bandplan.toml
+config-static.toml
+config-dynamic.json
+config-capture_sets.json
+config-roi.json
+
+# Service startup script
+qrm-logger.sh
+
+# logs
+application.log
 
 # Distribution files
 dist_qrm-logger.zip
 temp_dist/
+create_distribution.bat
+exclude_list.txt
 
 # Python
 __pycache__/
@@ -16,3 +28,6 @@ __pycache__/
 .vscode/
 .idea/
 
+warp.md
+
+drafts/*

@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   # Python version
-  - python>=3.10
+  - python>=3.11
   
   # GNU Radio ecosystem
   - gnuradio-core>=3.10.0

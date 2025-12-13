@@ -157,12 +157,26 @@ Currently, only **RTL-SDR** is supported out-of-the-box, but it should be easy t
 
 ## Configuration
 
+qrm-logger uses TOML files for user-editable configuration:
+- **`config-static.toml`** - Static defaults (SDR, recording, visualization, web server)
+- **`config-bandplan.toml`** - Amateur radio band definitions
+- **`config-capture_sets.json`** - Frequency monitoring strategies
+- **`config-dynamic.json`** - Runtime settings (managed via web interface)
 
+All files are auto-generated on first run. Edit `config-static.toml` and `config-bandplan.toml` to customize your setup.
+
+See [configuration.md](docs/configuration.md) for detailed documentation.
 
 ### Web Server Configuration
 
 By default, the web interface is configured for local access only (`localhost:7060`). This is the most secure option as it prevents network access from other devices.
-Change `web_server_host` in `config/web_server.py` to `0.0.0.0` to allow access from other devices on your network. Only use this on trusted networks since there is no authentication.
+
+To allow network access:
+1. Edit `config-static.toml`
+2. Change `host = "localhost"` to `host = "0.0.0.0"` in the `[web]` section
+3. Restart the application
+
+**Warning:** Only use `0.0.0.0` on trusted networks since there is no authentication.
 
 
 ### Running as a Service on Raspberry Pi

@@ -597,7 +597,8 @@
             <section class="modal-card-body">
                 <template x-if="$store.config.getCaptureSetInfoData()">
                     <div>
-                        <h3 class="title is-5" style="margin-bottom: 1rem;" x-text="'Set ID: ' + $store.config.getCaptureSetInfoData().captureSetId"></h3>
+                        <h3 class="title is-5" style="margin-bottom: 0.5rem;" x-text="'Set ID: ' + $store.config.getCaptureSetInfoData().captureSetId"></h3>
+                        <p class="has-text-grey" style="margin-bottom: 1rem; font-style: italic;" x-show="$store.config.getCaptureSetInfoData().description" x-text="$store.config.getCaptureSetInfoData().description" x-cloak></p>
                         <div style="overflow-x: auto;">
                             <table class="table is-fullwidth is-striped is-hoverable is-narrow capture-set-table-compact" style="background-color: transparent;">
                                 <thead>

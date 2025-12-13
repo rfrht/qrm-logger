@@ -17,38 +17,70 @@
 
 """
 Amateur radio band definitions for spectrum analysis and plot annotations.
+Loaded from config-bandplan.toml file.
 """
 
+import logging
 from qrm_logger.core.objects import Band
 
-# Amateur radio band definitions for plot annotations
-# Each Band defines: (name, start_freq_khz, end_freq_khz)
-# Used to draw colored band markers on spectrum plots
 
-band_markers = [
-    # IARU Region 1 HF
-    Band("160", 1810, 2000),   # 160 meter band
-    Band("80", 3500, 3800),    # 80 meter band
-    # Region 2 variant (uncomment to use):
-    # Band("80", 3500, 4000),    # 80/75 meter band (Region 2)
-    Band("60", 5351, 5367),    # 60 meter band
-    Band("40", 7000, 7200),    # 40 meter band
-    # Region 2 variant (uncomment to use):
-    # Band("40", 7000, 7300),    # 40 meter band (Region 2)
-    Band("30", 10100, 10150),  # 30 meter band
-    Band("20", 14000, 14350),  # 20 meter band
-    Band("17", 18068, 18168),  # 17 meter band
-    Band("15", 21000, 21450),  # 15 meter band
-    Band("12", 24890, 24990),  # 12 meter band
-    Band("10", 28000, 29700),  # 10 meter band
-    # IARU Region 1 VHF/UHF service markers (kHz)
-    # 2m satellite downlink (space-to-Earth)
-    Band("VHF-SAT-DL", 145800, 146000),
-    # 2m FM repeater outputs
-    Band("VHF-RPT-OUT", 145600, 145800),
+def _load_bands_from_toml():
+    """
+    Load band definitions from config-bandplan.toml.
+    
+    Returns:
+        List of Band objects
+    """
+    from .toml_config import load_bands_toml
+    
+    try:
+        bands_data = load_bands_toml()
+        bands = []
+        
+        # Each top-level key is a band ID
+        for band_id, band_info in bands_data.items():
+            band = Band(
+                id=band_id,
+                start=band_info["start_khz"],
+                end=band_info["end_khz"]
+            )
+            bands.append(band)
+        
+        logging.info(f"Loaded {len(bands)} band definitions from config-bandplan.toml")
+        return bands
+        
+    except Exception as e:
+        logging.error(f"Error loading bands from TOML: {e}")
+        logging.info("Using hardcoded fallback bands")
+        return _get_fallback_bands()
 
-    # 70cm satellite downlink (space-to-Earth)
-    Band("UHF-SAT-DL", 435000, 438000),
-    # 70cm FM repeater outputs (typical Region 1 allocation; varies nationally)
-    Band("UHF-RPT-OUT", 439000, 440000),
-]
+
+def _get_fallback_bands():
+    """
+    Fallback band definitions if config-bandplan.toml cannot be loaded.
+    
+    Returns:
+        List of Band objects with default IARU Region 1 bands
+    """
+    return [
+        # IARU Region 1 HF
+        Band("160m", 1810, 2000),
+        Band("80m", 3500, 3800),
+        Band("60m", 5351, 5367),
+        Band("40m", 7000, 7200),
+        Band("30m", 10100, 10150),
+        Band("20m", 14000, 14350),
+        Band("17m", 18068, 18168),
+        Band("15m", 21000, 21450),
+        Band("12m", 24890, 24990),
+        Band("10m", 28000, 29700),
+        # VHF/UHF
+        Band("VHF-SAT-DL", 145800, 146000),
+        Band("VHF-RPT-OUT", 145600, 145800),
+        Band("UHF-SAT-DL", 435000, 438000),
+        Band("UHF-RPT-OUT", 439000, 440000),
+    ]
+
+
+# Load band markers from TOML
+band_markers = _load_bands_from_toml()

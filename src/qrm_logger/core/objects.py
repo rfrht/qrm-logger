@@ -99,9 +99,10 @@ class CaptureRun:
 
 
 class CaptureSet:
-    def __init__(self, id, specs):
+    def __init__(self, id, specs, description=None):
         self.id = id
         self.specs = specs
+        self.description = description
 
 
 
