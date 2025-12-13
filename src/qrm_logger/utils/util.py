@@ -30,7 +30,7 @@ from qrm_logger.core.objects import CaptureRun, CaptureSpec, FreqRange
 
 from qrm_logger.config.output_directories import output_directory
 
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 
 
 def create_filename(run: CaptureRun, prefix, file_extension):

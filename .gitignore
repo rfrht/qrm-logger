@@ -12,6 +12,9 @@ config-roi.json
 # Service startup script
 qrm-logger.sh
 
+# logs
+application.log
+
 # Distribution files
 dist_qrm-logger.zip
 temp_dist/
