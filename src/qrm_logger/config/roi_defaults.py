@@ -17,7 +17,7 @@
 
 """
 Default ROI (Regions of Interest) configuration for QRM Logger.
-This template is used to generate roi-config.json on first start.
+This template is used to generate config-roi.json on first start.
 """
 
 DEFAULT_ROI_JSON = """{

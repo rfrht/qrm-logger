@@ -158,12 +158,12 @@ Currently, only **RTL-SDR** is supported out-of-the-box, but it should be easy t
 ## Configuration
 
 qrm-logger uses TOML files for user-editable configuration:
-- **`config.toml`** - Static defaults (SDR, recording, visualization, web server)
-- **`bands.toml`** - Amateur radio band definitions
-- **`capture_sets.json`** - Frequency monitoring strategies
-- **`config.json`** - Runtime settings (managed via web interface)
+- **`config-static.toml`** - Static defaults (SDR, recording, visualization, web server)
+- **`config-bandplan.toml`** - Amateur radio band definitions
+- **`config-capture_sets.json`** - Frequency monitoring strategies
+- **`config-dynamic.json`** - Runtime settings (managed via web interface)
 
-All files are auto-generated on first run. Edit `config.toml` and `bands.toml` to customize your setup.
+All files are auto-generated on first run. Edit `config-static.toml` and `config-bandplan.toml` to customize your setup.
 
 See [configuration.md](docs/configuration.md) for detailed documentation.
 
@@ -172,7 +172,7 @@ See [configuration.md](docs/configuration.md) for detailed documentation.
 By default, the web interface is configured for local access only (`localhost:7060`). This is the most secure option as it prevents network access from other devices.
 
 To allow network access:
-1. Edit `config.toml`
+1. Edit `config-static.toml`
 2. Change `host = "localhost"` to `host = "0.0.0.0"` in the `[web]` section
 3. Restart the application
 

@@ -29,7 +29,7 @@ from .toml_config import _toml
 # Automatically start the scheduler when the application starts from command line
 # If True: scheduler starts immediately when main.py runs
 # If False: scheduler must be started manually via web interface
-# dynamic property, managed by config.json
+# dynamic property, managed by config-dynamic.json
 scheduler_autostart = _toml["scheduler"]["autostart"]
 
 # Cron expression in standard crontab format
@@ -39,5 +39,5 @@ scheduler_autostart = _toml["scheduler"]["autostart"]
 #   "0 * * * *"                 -> at minute 0 of every hour
 #   "*/5 18-21 * * *"           -> every 5 minutes from 18:00 to 21:59
 #   "*/10 6-8,17-20 * * mon-fri" -> every 10 minutes during commute hours on weekdays
-# dynamic property, managed by config.json
+# dynamic property, managed by config-dynamic.json
 scheduler_cron = _toml["scheduler"]["cron"]

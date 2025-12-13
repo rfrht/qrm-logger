@@ -17,7 +17,7 @@
 
 """
 TOML configuration loader for QRM Logger.
-Loads config.toml from project root, generates from defaults if missing.
+Loads config-static.toml from project root, generates from defaults if missing.
 """
 
 import os
@@ -43,8 +43,8 @@ _config = None
 _bands_config = None
 
 # Config file paths (relative to project root)
-CONFIG_TOML_PATH = "config.toml"
-BANDS_TOML_PATH = "bands.toml"
+CONFIG_TOML_PATH = "config-static.toml"
+BANDS_TOML_PATH = "config-bandplan.toml"
 
 
 def _count_keys(d, prefix=""):
@@ -112,7 +112,7 @@ def _load_toml_file(file_path, default_content, description="configuration"):
 
 def load_toml_config():
     """
-    Load config.toml or generate from defaults.
+    Load config-static.toml or generate from defaults.
     
     Returns:
         dict: Loaded TOML configuration
@@ -125,7 +125,7 @@ def load_toml_config():
 
 def load_bands_toml():
     """
-    Load bands.toml or generate from defaults.
+    Load config-bandplan.toml or generate from defaults.
     
     Returns:
         dict: Loaded band definitions

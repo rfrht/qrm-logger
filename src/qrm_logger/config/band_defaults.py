@@ -17,14 +17,14 @@
 
 """
 Default TOML band definitions template for QRM Logger.
-This template is used to generate bands.toml on first start.
+This template is used to generate config-bandplan.toml on first start.
 """
 
 DEFAULT_BANDS_TOML = """# Amateur Radio Band Definitions for QRM Logger
 # Used for spectrum plot annotations and band-specific capture configurations
 #
 # Structure: [band_id]
-# - band_id: Unique identifier used in capture_sets.json
+# - band_id: Unique identifier used in config-capture_sets.json
 # - start_khz: Band start frequency in kHz
 # - end_khz: Band end frequency in kHz
 #
@@ -125,12 +125,12 @@ end_khz = 440000
 # NOTES
 # =============================================================================
 #
-# Band IDs are referenced in capture_sets.json
+# Band IDs are referenced in config-capture_sets.json
 # Example: "band_ids": ["80m", "40m", "30m", "20m"]
 #
 # To add custom bands:
 # 1. Add new [band_id] section with unique ID
-# 2. Reference band_id in capture_sets.json
+# 2. Reference band_id in config-capture_sets.json
 #
 # Regional differences:
 # - Region 1: Europe, Africa, Middle East, Northern Asia

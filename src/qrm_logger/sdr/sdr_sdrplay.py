@@ -20,7 +20,7 @@ from qrm_logger.config.sdr_hardware import bias_t_enabled
 
 # SDRPlay bandwidth options in kHz
 SDRPLAY_BANDWIDTH_OPTIONS = [200, 300, 600, 1536, 5000, 6000, 7000, 8000]
-# default for dynamic property 'sdr_bandwidth', managed by config.json
+# default for dynamic property 'sdr_bandwidth', managed by config-dynamic.json
 SDRPLAY_BANDWIDTH_DEFAULT = 6000
 
 # SDRPlay RF gain range (0 to -24 dB, frequency dependent)

@@ -2,11 +2,11 @@
 # Generated output files
 _recordings/****
 
-bands.toml
-config.toml
-config.json
-capture_sets.json
-roi-config.json
+config-bandplan.toml
+config-static.toml
+config-dynamic.json
+config-capture_sets.json
+config-roi.json
 
 # Distribution files
 dist_qrm-logger.zip

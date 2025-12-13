@@ -76,7 +76,7 @@ skip_image_generation = _toml["visualization"]["skip_image_generation"]
 # Limit of most recent days to include in time-slice grids (None = all days)
 timeslice_days_back = _toml["visualization"]["timeslice"]["days_back"]
 
-# Dynamic settings (stored in config.json); these are defaults used by ConfigManager
+# Dynamic settings (stored in config-dynamic.json); these are defaults used by ConfigManager
 # Hours (0–23) for which time-slice grids are generated after matching recordings
 timeslice_hours_default = _toml["visualization"]["timeslice"]["hours_default"]
 # Auto-generate time-slice grids after matching hourly recordings

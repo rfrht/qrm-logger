@@ -17,7 +17,7 @@
 
 """
 Default TOML configuration template for QRM Logger.
-This template is used to generate config.toml on first start.
+This template is used to generate config-static.toml on first start.
 """
 
 DEFAULT_CONFIG_TOML = """# QRM Logger Configuration
@@ -52,7 +52,7 @@ keep_raw_files = false
 # =============================================================================
 
 [recording]
-# Recording time in seconds (default value for config.json)
+# Recording time in seconds (default value for config-dynamic.json)
 rec_time_default_sec = 2
 
 # Frame rate for GNU Radio processing
@@ -184,11 +184,11 @@ show_title_label = true
 days_back = 60
 
 # Hours (0-23) for which time-slice grids are generated after matching recordings
-# Dynamic setting (stored in config.json); this is the default
+# Dynamic setting (stored in config-dynamic.json); this is the default
 hours_default = [6, 12, 18]
 
 # Auto-generate time-slice grids after matching hourly recordings
-# Dynamic setting (stored in config.json); this is the default
+# Dynamic setting (stored in config-dynamic.json); this is the default
 autogenerate_default = false
 
 # =============================================================================

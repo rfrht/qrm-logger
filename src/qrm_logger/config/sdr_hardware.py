@@ -40,12 +40,12 @@ device_name = _toml["sdr"]["device_name"]
 # RF gain setting for the SDR device
 # for RTLSDR: 0 to 50 dB (discrete steps, typical 0-40 dB). Default: 0 dB
 # for SDRPlay RF: 0 to -24 dB (frequency dependent). Recommended value: -18
-# dynamic property, managed by config.json
+# dynamic property, managed by config-dynamic.json
 rf_gain = _toml["sdr"]["rf_gain"]
 
 # IF gain setting for the SDR device (SDRPlay only)
 # for SDRPlay IF: -20 to -59 dB. Recommended value: -35
-# dynamic property, managed by config.json
+# dynamic property, managed by config-dynamic.json
 if_gain = _toml["sdr"]["if_gain"]
 
 # Bias-T power supply setting
@@ -63,5 +63,5 @@ bias_t_enabled = _toml["sdr"]["bias_t_enabled"]
 #   Benefits: Faster time to record; maintains stable operating temperature.
 #   Tradeoff: Higher continuous energy consumption and device heat.
 #   Warning: When this is off, do not unplug the SDR/USB while active; the application cannot reconnect.
-# dynamic property, managed by config.json
+# dynamic property, managed by config-dynamic.json
 sdr_shutdown_after_recording = _toml["sdr"]["shutdown_after_recording"]

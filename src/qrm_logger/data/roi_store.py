@@ -33,7 +33,7 @@ from qrm_logger.execution.data_exporter import process_spectrum_data, process_gr
 from qrm_logger.data.rms import write_rms
 
 # JSON file path for ROI configuration (app root)
-ROI_FILE_PATH = "roi-config.json"
+ROI_FILE_PATH = "config-roi.json"
 
 # Required fields for every ROI definition
 _REQUIRED_KEYS = {
@@ -46,7 +46,7 @@ _REQUIRED_KEYS = {
 
 
 def generate_default_roi_config():
-    """Generate default roi-config.json from template if it doesn't exist."""
+    """Generate default config-roi.json from template if it doesn't exist."""
     if os.path.exists(ROI_FILE_PATH):
         return
     

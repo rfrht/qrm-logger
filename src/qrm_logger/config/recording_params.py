@@ -27,7 +27,7 @@ from .toml_config import _toml
 # =============================================================================
 
 # Recording time in seconds
-# dynamic property, managed by config.json
+# dynamic property, managed by config-dynamic.json
 rec_time_default_sec = _toml["recording"]["rec_time_default_sec"]
 
 # Frame rate for GNU Radio processing
@@ -43,15 +43,15 @@ frequency_change_delay_sec = _toml["recording"]["frequency_change_delay_sec"]
 
 # Spectrum range configuration for plot generation
 # Used to set the dB scale limits on generated spectrum plots
-# dynamic property, managed by config.json
+# dynamic property, managed by config-dynamic.json
 min_db = _toml["recording"]["fft"]["min_db"]  # Minimum dB level for spectrum plots
-# dynamic property, managed by config.json
+# dynamic property, managed by config-dynamic.json
 max_db = _toml["recording"]["fft"]["max_db"]  # Maximum dB level for spectrum plots
 
 # FFT size for spectrum analysis (must be power of 2)
 # Higher values = better frequency resolution but slower processing
 # Common values: 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072
-# dynamic property, managed by config.json (maps to 'fft_size')
+# dynamic property, managed by config-dynamic.json (maps to 'fft_size')
 fft_size_default = _toml["recording"]["fft"]["fft_size_default"]
 
 # FFT Smoothing/Averaging Configuration

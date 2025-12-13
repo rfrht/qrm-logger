@@ -86,7 +86,7 @@ Edit
 ```
 device_name = DEVICE_NAME_SDRPLAY
 ```
-Then delete the config.json file to have it recreated on startup. Start the application and configure the device in UI config tab 'SDR'.
+Then delete the config-dynamic.json file to have it recreated on startup. Start the application and configure the device in UI config tab 'SDR'.
 
 ## Remarks
 

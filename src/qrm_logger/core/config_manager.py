@@ -17,7 +17,7 @@
 
 """
 Configuration manager for QRM Logger.
-Handles loading configuration from config.json file and creates default config if needed.
+Handles loading configuration from config-dynamic.json file and creates default config if needed.
 """
 
 import json
@@ -26,7 +26,7 @@ import os
 from typing import Dict, Any
 
 # Single source of truth for the JSON config file path (relative to project root)
-DEFAULT_CONFIG_PATH = "config.json"
+DEFAULT_CONFIG_PATH = "config-dynamic.json"
 
 # Import default values from existing config.py
 from qrm_logger.config.scheduler_settings import scheduler_cron, scheduler_autostart

@@ -33,7 +33,7 @@ from qrm_logger.utils.util import create_step_specs, create_band_specs, create_v
 # =============================================================================
 
 # Path to the capture sets configuration file
-CAPTURE_SETS_JSON_PATH = "capture_sets.json"
+CAPTURE_SETS_JSON_PATH = "config-capture_sets.json"
 
 # Current version of the capture sets JSON schema
 CAPTURE_SETS_JSON_VERSION = 1
@@ -164,7 +164,7 @@ def load_capture_sets_from_json(json_path):
     
     if file_version != CAPTURE_SETS_JSON_VERSION:
         raise ValueError(
-            f"Incompatible capture_sets.json version: {file_version}. "
+            f"Incompatible config-capture_sets.json version: {file_version}. "
             f"Expected version {CAPTURE_SETS_JSON_VERSION}. "
             f"Please update or regenerate the file."
         )
@@ -240,7 +240,7 @@ def init_capture_sets():
     Load capture sets from JSON file, or generate defaults if missing.
     
     Priority:
-    1. Load from capture_sets.json (user configuration)
+    1. Load from config-capture_sets.json (user configuration)
     2. If missing, generate from defaults and save to JSON
     
     Returns:

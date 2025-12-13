@@ -17,7 +17,7 @@
 
 """
 Amateur radio band definitions for spectrum analysis and plot annotations.
-Loaded from bands.toml file.
+Loaded from config-bandplan.toml file.
 """
 
 import logging
@@ -26,7 +26,7 @@ from qrm_logger.core.objects import Band
 
 def _load_bands_from_toml():
     """
-    Load band definitions from bands.toml.
+    Load band definitions from config-bandplan.toml.
     
     Returns:
         List of Band objects
@@ -46,7 +46,7 @@ def _load_bands_from_toml():
             )
             bands.append(band)
         
-        logging.info(f"Loaded {len(bands)} band definitions from bands.toml")
+        logging.info(f"Loaded {len(bands)} band definitions from config-bandplan.toml")
         return bands
         
     except Exception as e:
@@ -57,7 +57,7 @@ def _load_bands_from_toml():
 
 def _get_fallback_bands():
     """
-    Fallback band definitions if bands.toml cannot be loaded.
+    Fallback band definitions if config-bandplan.toml cannot be loaded.
     
     Returns:
         List of Band objects with default IARU Region 1 bands
