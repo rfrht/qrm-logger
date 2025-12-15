@@ -22,7 +22,7 @@ import shutil
 import tempfile
 
 from qrm_logger.config.output_directories import subdirectory_csv
-from qrm_logger.utils.util import create_dirname_flat
+from qrm_logger.utils.util import create_dirname_flat, check_file_path
 
 
 def write_rms(capture_set_id, results, capture_params):
@@ -179,8 +179,9 @@ def write_csv(capture_set_id, rms_data, capture_ids, capture_params, filename="r
     """
     counter = capture_params.counter
     recording_start_datetime = capture_params.recording_start_datetime
-    directory_csv = create_dirname_flat(capture_set_id, subdirectory_csv)
+    directory_csv = create_dirname_flat(capture_set_id, subdirectory_csv, True)
     csv_file = directory_csv + "/" + filename
+    check_file_path(csv_file)
     
     # Step 1: Get existing columns from CSV header
     existing_columns = _read_csv_spec_columns(csv_file)
@@ -274,6 +275,8 @@ def get_rms_data_as_json(capture_set_id, rms_type="standard"):
     directory_csv = create_dirname_flat(capture_set_id, subdirectory_csv)
 
     csv_file_path = f"{directory_csv}/{filename}"
+    check_file_path(csv_file_path)
+
 
     try:
         # Check if the file exists

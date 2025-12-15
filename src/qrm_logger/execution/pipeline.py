@@ -28,8 +28,6 @@ import traceback
 from datetime import datetime
 
 from qrm_logger.config.output_directories import keep_raw_files
-# Import init function instead of static list to avoid import-time empty list issue
-from qrm_logger.config.capture_definitions import get_capture_set_ids
 from qrm_logger.core.config_manager import get_config_manager
 from qrm_logger.execution.data_exporter import process_grids, process_spectrum_data, _get_db_configurations
 from qrm_logger.core.objects import RecordingStatus, CaptureParams

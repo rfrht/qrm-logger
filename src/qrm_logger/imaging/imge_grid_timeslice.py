@@ -41,7 +41,7 @@ from qrm_logger.config.visualization import (
     timeslice_days_back,
 )
 from qrm_logger.data.metadata import load_plot_metadata
-from qrm_logger.utils.util import create_dirname_flat
+from qrm_logger.utils.util import create_dirname_flat, check_file_path
 
 # Reuse rendering helpers from the main image_grid module
 from qrm_logger.imaging.image_grid import (
@@ -114,8 +114,9 @@ def generate_time_slice_grid(capture_set_id, plot_type, anchor_hour):
     """
     # Once-per-hour guard: if the resized output exists and was written this wall-clock hour, skip
     try:
-        directory_grids_full = create_dirname_flat(capture_set_id, subdirectory_grids_full)
-        out_full = directory_grids_full + capture_set_id + f"_{plot_type}_timeslice_H{int(anchor_hour):02d}_full.png"
+        directory_grids_full = create_dirname_flat(capture_set_id, subdirectory_grids_full, True)
+        out_full = directory_grids_full + "/" + capture_set_id + f"_{plot_type}_timeslice_H{int(anchor_hour):02d}_full.png"
+        check_file_path(out_full)
         now = datetime.now()
         hour_start = now.replace(minute=0, second=0, microsecond=0)
         hour_end = hour_start + timedelta(hours=1)
@@ -231,13 +232,15 @@ def generate_time_slice_grid(capture_set_id, plot_type, anchor_hour):
     grid_img = image_grid(images, rows=row_count, cols=col_count_total, w=sample_w, h=sample_h, col_widths=col_widths)
 
     # Save
-    directory_grids_full = create_dirname_flat(capture_set_id, subdirectory_grids_full)
-    filename_full = directory_grids_full + capture_set_id + f"_{plot_type}_timeslice_H{int(anchor_hour):02d}_full.png"
+    directory_grids_full = create_dirname_flat(capture_set_id, subdirectory_grids_full, True)
+    filename_full = directory_grids_full + "/" + capture_set_id + f"_{plot_type}_timeslice_H{int(anchor_hour):02d}_full.png"
+    check_file_path(filename_full)
     logging.info("save time-slice grid file "+str(grid_img.size)+ ": "+ filename_full)
     grid_img.save(filename_full)
 
-    directory_grids_resized = create_dirname_flat(capture_set_id, subdirectory_grids_resized)
-    filename_resized = directory_grids_resized + capture_set_id + f"_{plot_type}_timeslice_H{int(anchor_hour):02d}_resized.png"
+    directory_grids_resized = create_dirname_flat(capture_set_id, subdirectory_grids_resized, True)
+    filename_resized = directory_grids_resized + "/" + capture_set_id + f"_{plot_type}_timeslice_H{int(anchor_hour):02d}_resized.png"
+    check_file_path(filename_resized)
     grid_img.thumbnail((2048, 2048), Image.Resampling.LANCZOS)
     logging.info("save time-slice resized grid file "+str(grid_img.size)+ ": "+ filename_resized)
     grid_img.save(filename_resized)

@@ -35,7 +35,7 @@ from qrm_logger.data.metadata import save_plot_metadata
 from qrm_logger.data.fft_data import load_and_crop_data
 from qrm_logger.imaging.image_generator import generate_waterfall_plot, generate_average_spectrum_plot
 from qrm_logger.core.objects import CaptureRun, ProcessingResult, RecordingStatus, CaptureParams
-from qrm_logger.utils.util import create_dirname, create_filename
+from qrm_logger.utils.util import create_dirname, create_filename, check_file_path
 from qrm_logger.data.log import clear_collected_log_texts, write_log_text
 
 from PIL import Image
@@ -203,12 +203,13 @@ def generate_images(run: CaptureRun, data, min_db_val, max_db_val, plot_type):
 
     """
 
-    directory_plot = create_dirname(run, subdirectory_plots_full)
+    directory_plot = create_dirname(run, subdirectory_plots_full, True)
 
     file_extension = "png"
     prefix = plot_type
     plot_filename = create_filename(run, prefix, file_extension)
     plot_file = directory_plot + plot_filename
+    check_file_path(plot_file)
     
     # Decimation is now handled inside generate_plot() using config values
     if plot_type == "waterfall":
@@ -219,9 +220,10 @@ def generate_images(run: CaptureRun, data, min_db_val, max_db_val, plot_type):
         logging.error("invalid plot type: "+ plot_type)
         return
 
-    directory_resized = create_dirname(run, subdirectory_plots_resized)
-
+    directory_resized = create_dirname(run, subdirectory_plots_resized, True)
     filename_resized = directory_resized + plot_filename
+    check_file_path(filename_resized)
+
     logging.debug("write resized " + filename_resized)
 
     size = 512, 512

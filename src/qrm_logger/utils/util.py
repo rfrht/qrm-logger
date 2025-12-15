@@ -24,11 +24,13 @@ import logging
 import os
 import shutil
 import re
+from pathlib import Path
 
 from qrm_logger.config.band_definitions import band_markers
 from qrm_logger.core.objects import CaptureRun, CaptureSpec, FreqRange
 
 from qrm_logger.config.output_directories import output_directory
+
 
 VERSION = "0.1.5"
 
@@ -49,22 +51,36 @@ def create_filename_raw(counter, id):
     return filename
 
 
-def create_dirname(run: CaptureRun, subdirectory):
-    dir = output_directory + "/" + run.capture_set_id + "/" + subdirectory + "/" + run.date_string + "/"
-    os.makedirs(dir, exist_ok=True)
-    return dir
+def create_dirname(run: CaptureRun, subdirectory, mkdirs:bool = False):
+    dir = check_file_path(run.capture_set_id + "/" + subdirectory + "/" + run.date_string + "/")
+    if mkdirs:
+        os.makedirs(dir, exist_ok=True)
+    return str(dir)
 
 
-def create_dirname_meta(subdirectory, capture_set_id, date_string):
-    dir = output_directory + "/" + capture_set_id + "/" + subdirectory + "/" + date_string + "/"
-    os.makedirs(dir, exist_ok=True)
-    return dir
+def create_dirname_meta(subdirectory, capture_set_id, date_string, mkdirs:bool = False):
+    dir = check_file_path(capture_set_id + "/" + subdirectory + "/" + date_string + "/")
+    if mkdirs:
+        os.makedirs(dir, exist_ok=True)
+    return str(dir)
 
 
-def create_dirname_flat(capture_set_id, subdirectory):
-    dir = output_directory + "/" + capture_set_id + "/" + subdirectory + "/"
-    os.makedirs(dir, exist_ok=True)
-    return dir
+def create_dirname_flat(capture_set_id, subdirectory, mkdirs:bool = False):
+    dir = check_file_path(capture_set_id + "/" + subdirectory + "/")
+    if mkdirs:
+        os.makedirs(dir, exist_ok=True)
+    return str(dir)
+
+def check_file_path(filename_input):
+    #logging.info("check_filename: "+str(filename_input))
+    base_dir = Path(output_directory).resolve()
+    filename = Path(filename_input)
+    requested_path = base_dir / filename
+    # Ensure path remains within base directory
+    if not requested_path.resolve().is_relative_to(base_dir):
+        logging.error("Invalid Path "+filename_input)
+        raise Exception("Invalid Path")
+    return requested_path
 
 def create_step_specs(start_mhz, end_mhz, step_mhz, suffix, crop_to_step=False, crop_margin_khz=0):
     specs = []
