@@ -137,10 +137,10 @@
           <div style="margin-bottom: 10px;">
             <span class="has-text-weight-semibold" style="color: darkorange;">Select to browse plots:</span>
           </div>
-          
+
           <!-- Horizontal list of capture spec buttons -->
           <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;">
-            <template x-for="spec in $store.image.captureSpecs" :key="spec.id">
+            <template x-for="spec in $store.image.captureSpecs.specs" :key="spec.id">
               <button 
                 class="button is-small is-warning is-outlined"
                 @click="$store.image.openImages(spec.id)"
