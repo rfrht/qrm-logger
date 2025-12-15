@@ -78,7 +78,7 @@ def main():
     # Import config modules after TOML is loaded
     from qrm_logger.utils.util import  print_capture_set, check_config, check_capture_sets
 
-    from qrm_logger.config.capture_definitions import init_capture_sets, capture_sets
+    from qrm_logger.config.capture_definitions import init_capture_sets
     from qrm_logger.core.config_manager import get_config_manager
     from qrm_logger.scheduling.scheduler import get_scheduler
     from qrm_logger.web.web_routes import run_bottle
@@ -109,7 +109,8 @@ def main():
 
     # Print capture set configuration to console
     logging.info("=== Capture Set Configurations ===")
-    for s in capture_sets:
+    from qrm_logger.config.capture_definitions import get_capture_sets
+    for s in get_capture_sets():
         print_capture_set(s)
     logging.info("===================================")
 

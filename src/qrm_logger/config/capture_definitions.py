@@ -270,6 +270,10 @@ def init_capture_sets():
         logging.error(f"Error creating default capture sets: {e}")
 
 
+def get_capture_sets():
+    """Return list of capture sets currently loaded."""
+    return capture_sets
+
 def get_capture_set_ids():
     """Return list of capture set IDs currently loaded."""
     return [s.id for s in capture_sets]

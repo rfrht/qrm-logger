@@ -25,7 +25,7 @@ import numpy as np
 
 from qrm_logger.config.output_directories import subdirectory_raw
 from qrm_logger.core.objects import CaptureRun
-from qrm_logger.utils.util import create_dirname, create_filename, create_filename_raw
+from qrm_logger.utils.util import create_dirname, create_filename, create_filename_raw, check_file_path
 from qrm_logger.utils.perf import log_raw_write_perf
 from qrm_logger.data.log import collect_log_text
 
@@ -41,10 +41,9 @@ def load_and_crop_data(run):
     # Load raw data
     data = load_raw_fft_data(raw_filename, run.fft_size)
     if data is None:
-        collect_log_text(run, 'load_and_crop_data', f"ERROR: Failed to load raw data for run {run.id}: {raw_filename}")
         return None, None
 
-    collect_log_text(run, 'load_and_crop_data', f"Loaded raw data from {raw_filename}: shape {data.shape}")
+    collect_log_text(run, 'load_and_crop_data', f"Loaded raw data: shape {data.shape}")
 
     cropped_data = None
     # Apply cropping if FreqRange is defined
@@ -128,9 +127,10 @@ def write_raw(run: CaptureRun, data):
     try:
         t_start = time.perf_counter()
 
-        directory = create_dirname(run, subdirectory_raw)
+        directory = create_dirname(run, subdirectory_raw, True)
         filename = create_filename_raw(run.counter, run.id)
         raw_filename = directory + filename
+        check_file_path(raw_filename)
 
         # Ensure 2D int32 array
         data_array = np.asarray(data, dtype=np.int32)

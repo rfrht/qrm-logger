@@ -42,6 +42,7 @@ from qrm_logger.recorder.recorder import get_recorder
 from qrm_logger.execution import get_pipeline
 
 
+
 @route('/system-info')
 def system_info():
     """Return system information such as free disk space for the output directory."""
@@ -271,20 +272,9 @@ def sdr_control():
 def capture_sets_endpoint():
     """Get list of available capture set IDs (includes ROI sets with _ROI suffix when enabled)."""
     try:
-        # Base sets from configuration (dynamically loaded)
-        base_ids = get_capture_set_ids()
 
-        # Dynamic ROI sets only when processing is enabled
-        try:
-            cfg = load_roi_config()
-            rois = cfg.get('rois', []) if cfg.get('processing_enabled', False) else []
-        except Exception:
-            rois = []
-        roi_base_ids = sorted(list({ r.get('base_capture_set_id') for r in rois if r.get('base_capture_set_id') }))
-        roi_ids = [f"{sid}_ROI" for sid in roi_base_ids if isinstance(sid, str) and sid]
+        all_ids = get_all_valid_capture_ids()
 
-        # Merge while preserving base order, then ROI
-        all_ids = base_ids + [rid for rid in roi_ids if rid not in base_ids]
         return dict(data=all_ids)
     except Exception as e:
         logging.error(f"Error in capture_sets endpoint: {e}")
@@ -364,7 +354,16 @@ def grids():
         if not capture_set_id or not isinstance(capture_set_id, str):
             return HTTPResponse(status=400, body=json.dumps({'error': 'capture_set_id is required'}))
 
+        all_ids = get_all_valid_capture_ids()
+        if not capture_set_id in all_ids:
+            return HTTPResponse(status=400, body=json.dumps({'error': 'invalid capture_set_id'}))
+
         plot_type = request.query.get('plot_type')
+        if plot_type not in ['waterfall', 'average']:
+            return HTTPResponse(
+                status=400,
+                body=json.dumps({'error': 'plot_type must be "waterfall" or "average"'})
+            )
 
         grids_list = get_grids(capture_set_id, plot_type=plot_type)
         return dict(data=grids_list)
@@ -398,6 +397,10 @@ def rms_data():
         if not capture_set_id or not isinstance(capture_set_id, str):
             return HTTPResponse(status=400, body=json.dumps({'error': 'capture_set_id is required'}))
 
+        all_ids = get_all_valid_capture_ids()
+        if not capture_set_id in all_ids:
+            return HTTPResponse(status=400, body=json.dumps({'error': 'invalid capture_set_id'}))
+
         # Load data for the specific set
         try:
             data = get_rms_data_as_json(capture_set_id, rms_type)
@@ -423,6 +426,10 @@ def log_data():
         capture_set_id = request.query.get('capture_set_id')
         if not capture_set_id or not isinstance(capture_set_id, str):
             return HTTPResponse(status=400, body=json.dumps({'error': 'capture_set_id is required'}))
+
+        all_ids = get_all_valid_capture_ids()
+        if not capture_set_id in all_ids:
+            return HTTPResponse(status=400, body=json.dumps({'error': 'invalid capture_set_id'}))
 
         try:
             data = get_log_data_as_json(capture_set_id)
@@ -492,6 +499,11 @@ def images():
                 status=400, 
                 body=json.dumps({'error': 'Missing required parameters: capture_set_id, capture_spec_id, grid_type, day'})
             )
+
+        all_ids = get_all_valid_capture_ids()
+        if not capture_set_id in all_ids:
+            return HTTPResponse(status=400, body=json.dumps({'error': 'invalid capture_set_id'}))
+
         
         if grid_type not in ['waterfall', 'average']:
             return HTTPResponse(
@@ -580,6 +592,7 @@ def _apply_cache_headers(resp):
     return resp
 
 
+
 @route('/timeslice_grids')
 def timeslice_grids():
     """List available time-slice grids (across days) by hour for a capture set and plot type.
@@ -591,6 +604,16 @@ def timeslice_grids():
         if not capture_set_id or not plot_type:
             return HTTPResponse(status=400, body=json.dumps({'error': 'capture_set_id and plot_type are required'}))
 
+        if plot_type not in ['waterfall', 'average']:
+            return HTTPResponse(
+                status=400,
+                body=json.dumps({'error': 'plot_type must be "waterfall" or "average"'})
+            )
+
+        all_ids = get_all_valid_capture_ids()
+        if not capture_set_id in all_ids:
+            return HTTPResponse(status=400, body=json.dumps({'error': 'invalid capture_set_id'}))
+
         from qrm_logger.imaging.imge_grid_timeslice import get_timeslice_grids
         elems = get_timeslice_grids(capture_set_id, plot_type)
         return dict(data=elems)
@@ -599,6 +622,25 @@ def timeslice_grids():
         return HTTPResponse(status=500, body=json.dumps({'error': 'Internal server error'}))
 
 
+
+def get_all_valid_capture_ids():
+    # Base sets from configuration (dynamically loaded)
+
+    base_ids = get_capture_set_ids()
+
+    # Dynamic ROI sets only when processing is enabled
+    try:
+        from src.qrm_logger.data.roi_store import load_roi_config
+        cfg = load_roi_config()
+        rois = cfg.get('rois', []) if cfg.get('processing_enabled', False) else []
+    except Exception:
+        rois = []
+    roi_base_ids = sorted(list({r.get('base_capture_set_id') for r in rois if r.get('base_capture_set_id')}))
+    roi_ids = [f"{sid}_ROI" for sid in roi_base_ids if isinstance(sid, str) and sid]
+
+    # Merge while preserving base order, then ROI
+    all_ids = base_ids + [rid for rid in roi_ids if rid not in base_ids]
+    return all_ids
 
 
 def thread_function_server():

@@ -22,7 +22,7 @@ from typing import List, Tuple
 
 from qrm_logger.config.output_directories import subdirectory_log
 from qrm_logger.core.objects import CaptureRun
-from qrm_logger.utils.util import create_dirname_flat
+from qrm_logger.utils.util import create_dirname_flat, check_file_path
 
 # In-memory append-only buffer of collected messages (preserves insertion order)
 # Each entry is ((capture_set_id, counter, run_id), type, message)
@@ -117,8 +117,9 @@ def write_log_text(run, recording_start_datetime):
         logging.error("write_log_text: capture_set_id not found on run; aborting")
         return
 
-    directory_log = create_dirname_flat(capture_set_id, subdirectory_log)
+    directory_log = create_dirname_flat(capture_set_id, subdirectory_log, True)
     csv_file = os.path.join(directory_log, "log_"+date_string+".csv")
+    check_file_path(csv_file)
 
     header = "counter, date, time, id, type, log_text"
 

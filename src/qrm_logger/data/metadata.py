@@ -21,15 +21,18 @@ import os
 
 from qrm_logger.config.output_directories import subdirectory_metadata
 from qrm_logger.core.objects import CaptureRun
-from qrm_logger.utils.util import create_filename, create_dirname, create_dirname_meta
+from qrm_logger.utils.util import create_filename, create_dirname, create_dirname_meta, check_file_path
 
 
 def save_plot_metadata(run: CaptureRun, capture_params, plot_type):
     """Save plot metadata to CSV file for easier grid generation"""
-    metadata_dir = create_dirname(run, subdirectory_metadata)
+    metadata_dir = create_dirname(run, subdirectory_metadata, True)
 
     metadata_file = metadata_dir + "/" + plot_type+ "_plots_metadata.csv"
+    check_file_path(metadata_file)
+
     plot_filename = create_filename(run, plot_type, "png").lstrip("/")  # Remove leading slash
+
 
     # Check if file exists to determine if we need to write header
     file_exists = os.path.exists(metadata_file)
@@ -68,6 +71,7 @@ def load_plot_metadata(capture_set_id, date_string, plot_type):
     """Load plot metadata from CSV file"""
     metadata_dir = create_dirname_meta (subdirectory_metadata , capture_set_id, date_string)
     metadata_file = metadata_dir + "/" + plot_type+ "_plots_metadata.csv"
+    check_file_path(metadata_file)
 
     metadata = {}
 

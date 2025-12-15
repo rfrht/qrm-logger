@@ -30,7 +30,7 @@ from PIL import Image, ImageDraw
 from qrm_logger.config.visualization import png_compression_level, grid_sort_latest_first, grid_max_rows, grid_time_window_hours, grid_show_title_label
 from qrm_logger.config.output_directories import output_directory, subdirectory_grids_full, subdirectory_grids_resized, subdirectory_plots_resized
 from qrm_logger.data.metadata import load_plot_metadata
-from qrm_logger.utils.util import  create_dirname, create_dirname_flat, create_dirname_meta
+from qrm_logger.utils.util import create_dirname, create_dirname_flat, create_dirname_meta, check_file_path
 
 # Column layout threshold for sparse vs dense grid optimization
 SPARSE_COLUMN_THRESHOLD = 5
@@ -339,7 +339,8 @@ def _render_and_save(ctx, layout, capture_set_id, date_string, plot_type):
             images.append(blank_img)
         else:
             filename = token
-            image_path = ctx['directory_input'] + filename
+            image_path = ctx['directory_input'] + "/" + filename
+            check_file_path(image_path)
             if os.path.exists(image_path):
                 images.append(image_path)
             else:
@@ -371,15 +372,17 @@ def _render_and_save(ctx, layout, capture_set_id, date_string, plot_type):
     grid = image_grid(images, rows=row_count, cols=col_count_total, w=w, h=h, col_widths=col_widths)
 
     # Save images
-    directory_grids_full = create_dirname_flat(capture_set_id, subdirectory_grids_full)
-    filename_full = directory_grids_full + capture_set_id + f"_{plot_type}_grid_{date_string}_[{ctx['label']}]_full.png"
+    directory_grids_full = create_dirname_flat(capture_set_id, subdirectory_grids_full, True)
+    filename_full = directory_grids_full + "/" + capture_set_id + f"_{plot_type}_grid_{date_string}_[{ctx['label']}]_full.png"
+    check_file_path(filename_full)
     logging.info("save grid file "+str(grid.size)+ ": "+ filename_full)
     grid.save(filename_full)
 
     grid_resized_size = (2048, 2048) if row_count < 50 else (4096, 4096)
 
-    directory_grids_resized = create_dirname_flat(capture_set_id, subdirectory_grids_resized)
-    filename_resized = directory_grids_resized + capture_set_id + f"_{plot_type}_grid_{date_string}_[{ctx['label']}]_resized.png"
+    directory_grids_resized = create_dirname_flat(capture_set_id, subdirectory_grids_resized, True)
+    filename_resized = directory_grids_resized + "/" + capture_set_id + f"_{plot_type}_grid_{date_string}_[{ctx['label']}]_resized.png"
+    check_file_path(filename_resized)
 
     grid.thumbnail(grid_resized_size, Image.Resampling.LANCZOS)
     logging.info("save resized grid file "+str(grid.size)+ ": "+ filename_resized)
@@ -405,7 +408,6 @@ def get_grids(capture_set_id, plot_type):
 
     dir_full = create_dirname_flat(capture_set_id, subdirectory_grids_full)
     dir_resized = create_dirname_flat(capture_set_id, subdirectory_grids_resized)
-    #date_prefix = "_grid_"
     date_prefix = "_" + plot_type + "_grid_"
 
     # Collect entries per (date, label)
