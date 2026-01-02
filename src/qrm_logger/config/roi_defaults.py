@@ -24,39 +24,81 @@ DEFAULT_ROI_JSON = """{
   "processing_enabled": true,
   "rois": [
     {
+      "roi_id": "FT8 160m",
+      "base_capture_set_id": "HF_bands",
+      "capture_spec_id": "160m",
+      "center_khz": 1842,
+      "span_khz": 5
+    },
+    {
       "roi_id": "FT8 80m",
       "base_capture_set_id": "HF_bands",
       "capture_spec_id": "80m",
-      "center_khz": 3573,
-      "span_khz": 10
+      "center_khz": 3574,
+      "span_khz": 5
+    },
+    {
+      "roi_id": "FT8 60m",
+      "base_capture_set_id": "HF_bands",
+      "capture_spec_id": "60m",
+      "center_khz": 5358,
+      "span_khz": 5
     },
     {
       "roi_id": "FT8 40m",
       "base_capture_set_id": "HF_bands",
       "capture_spec_id": "40m",
-      "center_khz": 7074,
-      "span_khz": 10
+      "center_khz": 7075,
+      "span_khz": 5
+    },
+    {
+      "roi_id": "FT8 30m",
+      "base_capture_set_id": "HF_bands",
+      "capture_spec_id": "30m",
+      "center_khz": 10137,
+      "span_khz": 5
     },
     {
       "roi_id": "FT8 20m",
       "base_capture_set_id": "HF_bands",
       "capture_spec_id": "20m",
-      "center_khz": 14074,
-      "span_khz": 10
+      "center_khz": 14075,
+      "span_khz": 5
+    },
+    {
+      "roi_id": "FT8 17m",
+      "base_capture_set_id": "HF_bands",
+      "capture_spec_id": "17m",
+      "center_khz": 18101,
+      "span_khz": 5
     },
     {
       "roi_id": "FT8 15m",
       "base_capture_set_id": "HF_bands",
       "capture_spec_id": "15m",
-      "center_khz": 21074,
-      "span_khz": 10
+      "center_khz": 21076,
+      "span_khz": 5
+    },
+    {
+      "roi_id": "FT8 12m",
+      "base_capture_set_id": "HF_bands",
+      "capture_spec_id": "12m",
+      "center_khz": 24916,
+      "span_khz": 5
     },
     {
       "roi_id": "FT8 10m",
       "base_capture_set_id": "HF_bands",
       "capture_spec_id": "10m",
-      "center_khz": 28074,
-      "span_khz": 10
+      "center_khz": 28076,
+      "span_khz": 5
+    },
+    {
+      "roi_id": "FT8 6m",
+      "base_capture_set_id": "HF_bands",
+      "capture_spec_id": "6m",
+      "center_khz": 50316,
+      "span_khz": 5
     }
   ]
 }"""
