@@ -75,10 +75,10 @@ def create_default_capture_sets_config():
         "capture_sets": [
             {
                 "id": "HF_bands",
-                "description": "Amateur radio HF bands (80m, 40m, 30m, 20m, 17m, 15m, 10m)",
+                "description": "Amateur radio HF bands (160 - 6m)",
                 "type": "band_specs",
                 "params": {
-                    "band_ids": ["80m", "40m", "30m", "20m", "17m", "15m", "10m"]
+                    "band_ids": ["160m", "80m", "60m", "40m", "30m", "20m", "17m", "15m", "12m", "10m", "6m"]
                 }
             },
             {
