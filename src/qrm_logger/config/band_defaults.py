@@ -93,6 +93,11 @@ description = "10 meter band (28 MHz)"
 start_khz = 28000
 end_khz = 29700
 
+[6m]
+description = "6 meter band (50 MHz, lower part)"
+start_khz = 50000
+end_khz = 52000
+
 # =============================================================================
 # VHF/UHF BANDS AND SERVICES
 # =============================================================================
